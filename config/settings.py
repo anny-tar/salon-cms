@@ -137,3 +137,6 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Добро пожаловать",
     "language_chooser": False,
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
