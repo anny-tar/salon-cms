@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Секция: Услуги -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Наши услуги</h2>
+        <div class="row g-3">
+            {% for service in services %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ service.name }}</h5>
+                        <p class="card-text text-muted">{{ service.description }}</p>
+                        <p class="mb-1"><strong>{{ service.price }} руб.</strong></p>
+                        <p class="text-muted small">{{ service.duration }} мин.</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted">Услуги скоро появятся</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Секция: Команда -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Наша команда</h2>
+        <div class="row g-3">
+            {% for specialist in specialists %}
+            <div class="col-md-3">
+                <a href="/specialist/{{ specialist.pk }}/" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow-sm text-center">
+                        {% if specialist.photo %}
+                        <img src="{{ specialist.photo.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title">{{ specialist.full_name }}</h6>
+                            <p class="text-muted small">{{ specialist.specialization }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted">Специалисты скоро появятся</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Секция: Портфолио -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Портфолио</h2>
+        <div class="row g-3">
+            {% for work in portfolio %}
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    {% if work.photo_watermarked %}
+                    <img src="{{ work.photo_watermarked.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    {% elif work.photo_original %}
+                    <img src="{{ work.photo_original.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body p-2">
+                        <p class="small text-muted mb-0">{{ work.specialist.full_name }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted">Работы скоро появятся</p>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="/portfolio/" class="btn btn-primary">Смотреть все работы</a>
+        </div>
+    </div>
+</section>
+
+<!-- Секция: Новости -->
+{% if posts %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Новости и акции</h2>
+        <div class="row g-3">
+            {% for post in posts %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    {% if post.photo %}
+                    <img src="{{ post.photo.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge mb-2" style="background-color: var(--color-accent);">
+                            {{ post.get_post_type_display }}
+                        </span>
+                        <h6 class="card-title">{{ post.title }}</h6>
+                        <p class="card-text text-muted small">{{ post.body|truncatewords:20 }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Секция: Товары -->
+{% if products %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Товары</h2>
+        <div class="row g-3">
+            {% for product in products %}
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm">
+                    {% if product.photo %}
+                    <img src="{{ product.photo.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ product.name }}</h6>
+                        <p class="text-muted small">{{ product.description|truncatewords:10 }}</p>
+                        <p><strong>{{ product.price }} руб.</strong></p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

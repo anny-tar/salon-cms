@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'news',
     'reports',
     'site_constructor',
+    'public_site',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -137,11 +139,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Salon CMS",
-    "site_header": "Salon CMS",
-    "site_brand": "Salon CMS",
+    "site_title": " ",
+    "site_header": " ",
+    "site_brand": " ",
     "welcome_sign": "Добро пожаловать",
     "language_chooser": False,
+    "show_ui_builder": False,
 }
 
 MEDIA_URL = '/media/'

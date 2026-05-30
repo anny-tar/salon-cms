@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-3 text-center">
+                {% if specialist.photo %}
+                <img src="{{ specialist.photo.url }}" class="img-fluid rounded-circle mb-3" style="width:200px; height:200px; object-fit:cover;">
+                {% endif %}
+            </div>
+            <div class="col-md-9">
+                <h2>{{ specialist.full_name }}</h2>
+                <p class="text-muted">{{ specialist.specialization }}</p>
+                <p>{{ specialist.description }}</p>
+            </div>
+        </div>
+
+        <h4 class="mb-4">Работы</h4>
+        <div class="row g-3">
+            {% for work in works %}
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    {% if work.photo_watermarked %}
+                    <img src="{{ work.photo_watermarked.url }}" class="card-img-top" style="height:220px; object-fit:cover;">
+                    {% elif work.photo_original %}
+                    <img src="{{ work.photo_original.url }}" class="card-img-top" style="height:220px; object-fit:cover;">
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">Работ пока нет</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
