@@ -131,4 +131,150 @@
 </section>
 {% endif %}
 
+<!-- Секция: Онлайн-запись -->
+<section class="py-5 bg-light" id="booking">
+    <div class="container">
+        <h2 class="text-center mb-4">Онлайн-запись</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm p-4">
+
+                    <div id="booking-success" class="alert alert-success d-none">
+                        Вы успешно записаны! Ожидайте подтверждения.
+                    </div>
+                    <div id="booking-error" class="alert alert-danger d-none"></div>
+
+                    <div id="booking-form-wrapper">
+                        <div class="mb-3">
+                            <label class="form-label">Ваше имя</label>
+                            <input type="text" id="b-name" class="form-control" placeholder="Имя Фамилия">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Телефон</label>
+                            <input type="text" id="b-phone" class="form-control" placeholder="+7 (999) 000-00-00">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Специалист</label>
+                            <select id="b-specialist" class="form-select">
+                                <option value="">Выберите специалиста</option>
+                                {% for s in specialists %}
+                                <option value="{{ s.pk }}">{{ s.full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Услуга</label>
+                            <select id="b-service" class="form-select">
+                                <option value="">Выберите услугу</option>
+                                {% for s in services %}
+                                <option value="{{ s.pk }}">{{ s.name }} ({{ s.duration }} мин.)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Дата</label>
+                            <input type="date" id="b-date" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Время</label>
+                            <select id="b-time" class="form-select">
+                                <option value="">Сначала выберите специалиста, услугу и дату</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="b-consent">
+                            <label class="form-check-label" for="b-consent">
+                                Согласен на обработку персональных данных
+                                {% if site_settings.privacy_policy %}
+                                (<a href="{{ site_settings.privacy_policy.url }}" target="_blank">политика</a>)
+                                {% endif %}
+                            </label>
+                        </div>
+                        <button id="b-submit" class="btn btn-primary w-100" disabled>
+                            Записаться
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+const csrfToken = '{{ csrf_token }}';
+
+function loadSlots() {
+    const specialist = document.getElementById('b-specialist').value;
+    const service = document.getElementById('b-service').value;
+    const date = document.getElementById('b-date').value;
+    const timeSelect = document.getElementById('b-time');
+
+    if (!specialist || !service || !date) {
+        timeSelect.innerHTML = '<option value="">Сначала выберите специалиста, услугу и дату</option>';
+        return;
+    }
+
+    fetch(`/ajax/slots/?specialist=${specialist}&service=${service}&date=${date}`)
+        .then(r => r.json())
+        .then(data => {
+            timeSelect.innerHTML = '';
+            if (data.slots.length === 0) {
+                timeSelect.innerHTML = '<option value="">Нет доступных слотов</option>';
+            } else {
+                data.slots.forEach(slot => {
+                    const opt = document.createElement('option');
+                    opt.value = slot;
+                    opt.textContent = slot;
+                    timeSelect.appendChild(opt);
+                });
+            }
+            updateSubmitButton();
+        });
+}
+
+function updateSubmitButton() {
+    const consent = document.getElementById('b-consent').checked;
+    const time = document.getElementById('b-time').value;
+    document.getElementById('b-submit').disabled = !(consent && time);
+}
+
+document.getElementById('b-specialist').addEventListener('change', loadSlots);
+document.getElementById('b-service').addEventListener('change', loadSlots);
+document.getElementById('b-date').addEventListener('change', loadSlots);
+document.getElementById('b-consent').addEventListener('change', updateSubmitButton);
+
+document.getElementById('b-submit').addEventListener('click', function() {
+    const data = new FormData();
+    data.append('full_name', document.getElementById('b-name').value);
+    data.append('phone', document.getElementById('b-phone').value);
+    data.append('specialist', document.getElementById('b-specialist').value);
+    data.append('service', document.getElementById('b-service').value);
+    data.append('date', document.getElementById('b-date').value);
+    data.append('time_start', document.getElementById('b-time').value);
+    data.append('pd_consent', 'true');
+    data.append('csrfmiddlewaretoken', csrfToken);
+
+    fetch('/ajax/book/', {
+        method: 'POST',
+        body: data,
+    })
+    .then(r => r.json())
+    .then(result => {
+        if (result.success) {
+            document.getElementById('booking-form-wrapper').classList.add('d-none');
+            document.getElementById('booking-success').classList.remove('d-none');
+            document.getElementById('booking-error').classList.add('d-none');
+        } else {
+            const err = document.getElementById('booking-error');
+            err.textContent = result.error;
+            err.classList.remove('d-none');
+            document.getElementById('booking-success').classList.add('d-none');
+        }
+    });
+});
+</script>
+{% endblock %}
+
 {% endblock %}

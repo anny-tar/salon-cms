@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <h4 class="mb-3">Моё расписание — {{ specialist.full_name }}</h4>
+
+    <!-- Переключение дат -->
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a href="?date={{ selected_date|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm">Сегодня</a>
+        <input type="date" id="date-picker" class="form-control w-auto"
+               value="{{ selected_date|date:'Y-m-d' }}"
+               onchange="window.location='?date='+this.value">
+    </div>
+
+    <!-- Записи -->
+    {% if appointments %}
+    <div class="list-group">
+        {% for appt in appointments %}
+        <a href="/specialist/my/appointment/{{ appt.pk }}/"
+           class="list-group-item list-group-item-action mb-2 rounded shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ appt.time_start|time:"H:i" }} — {{ appt.time_end|time:"H:i" }}</strong>
+                    <span class="ms-3">{{ appt.client.full_name }}</span>
+                    <span class="text-muted ms-2 small">{{ appt.service.name }}</span>
+                </div>
+                <span class="badge
+                    {% if appt.status == 'pending' %}bg-warning text-dark
+                    {% elif appt.status == 'confirmed' %}bg-success
+                    {% elif appt.status == 'in_progress' %}bg-primary
+                    {% elif appt.status == 'completed' %}bg-secondary
+                    {% elif appt.status == 'no_show' %}bg-warning text-dark
+                    {% elif appt.status == 'cancelled' %}bg-danger
+                    {% endif %}">
+                    {{ appt.get_status_display }}
+                </span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted">На этот день записей нет</p>
+    {% endif %}
+</div>
+{% endblock %}
