@@ -48,6 +48,10 @@ INSTALLED_APPS = [
     'services',
     'clients',
     'appointments',
+    'portfolio',
+    'products',
+    'news',
+
 ]
 
 MIDDLEWARE = [
