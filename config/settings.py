@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'products',
     'news',
     'reports',
+    'site_constructor',
 ]
 
 MIDDLEWARE = [
@@ -136,9 +137,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Тест CMS",
-    "site_header": "Тест CMS",
-    "site_brand": "Тест CMS",
+    "site_title": "Salon CMS",
+    "site_header": "Salon CMS",
+    "site_brand": "Salon CMS",
     "welcome_sign": "Добро пожаловать",
     "language_chooser": False,
 }
