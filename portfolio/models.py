@@ -89,3 +89,25 @@ class PortfolioWork(models.Model):
 
     def __str__(self):
         return f'{self.specialist} — {self.work_date}'
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+
+        if is_new and self.photo_original:
+            try:
+                from site_constructor.models import SiteSettings
+                from .watermark import apply_watermark
+                import os
+
+                site = SiteSettings.get()
+                watermarked = apply_watermark(self.photo_original, site)
+
+                filename = os.path.basename(self.photo_original.name)
+                self.photo_watermarked.save(
+                    f'wm_{filename}',
+                    watermarked,
+                    save=True,
+                )
+            except Exception as e:
+                print(f'Ошибка водяного знака: {e}')
