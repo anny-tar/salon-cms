@@ -1,21 +1,19 @@
 from django.contrib import admin
-from django.utils.html import format_html
-from adminsortable2.admin import SortableInlineAdminMixin
+from adminsortable2.admin import SortableInlineAdminMixin, SortableAdminBase
 from .models import SiteSettings, Section
 
 
 class SectionInline(SortableInlineAdminMixin, admin.StackedInline):
     model = Section
     extra = 0
-    fields = ('type', 'settings', 'order')
-    readonly_fields = ()
+    fields = ('type', 'settings')
 
     class Media:
         js = ('site_constructor/section_admin.js',)
 
 
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
+class SiteSettingsAdmin(SortableAdminBase, admin.ModelAdmin):
     inlines = [SectionInline]
 
     fieldsets = (

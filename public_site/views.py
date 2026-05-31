@@ -14,13 +14,30 @@ from .forms import BookingForm
 
 
 def index(request):
-    context = {
+    from site_constructor.models import SiteSettings, Section
+    from specialists.models import Specialist
+    from services.models import Service, ServiceCategory
+    from portfolio.models import PortfolioWork
+    from products.models import Product
+    from news.models import Post
+
+    site = SiteSettings.get()
+    sections = Section.objects.filter(site=site).order_by('order')
+
+    # Подготавливаем данные для живых секций
+    live_data = {
         'specialists': Specialist.objects.filter(is_active=True),
         'services': Service.objects.filter(is_active=True).select_related('category'),
-        'categories': ServiceCategory.objects.all(),
-        'portfolio': PortfolioWork.objects.filter(is_visible=True).select_related('specialist')[:12],
+        'portfolio': PortfolioWork.objects.filter(is_visible=True).select_related('specialist'),
+        'news': Post.objects.filter(is_published=True),
         'products': Product.objects.filter(is_active=True),
-        'posts': Post.objects.filter(is_published=True)[:6],
+    }
+
+    context = {
+        'sections': sections,
+        'live_data': live_data,
+        'specialists': live_data['specialists'],  # для формы записи
+        'services': live_data['services'],        # для формы записи
         'form': BookingForm(),
     }
     return render(request, 'public/index.html', context)

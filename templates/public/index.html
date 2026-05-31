@@ -2,148 +2,313 @@
 
 {% block content %}
 
-<!-- Секция: Услуги -->
+{% for section in sections %}
+
+{% if section.type == 'banner' %}
+<section style="padding:100px 0; text-align:center; color:#fff;
+    {% if section.settings.image %}
+    background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)) center/cover no-repeat, url('/media/{{ section.settings.image }}') center/cover no-repeat;
+    {% else %}
+    background-color: var(--color-primary);
+    {% endif %}">
+    <div class="container">
+        {% if section.settings.title %}<h1 class="display-4 fw-bold mb-3">{{ section.settings.title }}</h1>{% endif %}
+        {% if section.settings.subtitle %}<p class="lead mb-4">{{ section.settings.subtitle }}</p>{% endif %}
+        {% if section.settings.cta_text %}
+        <a href="{{ section.settings.cta_link|default:'#booking' }}" class="btn btn-lg btn-accent px-5">
+            {{ section.settings.cta_text }}
+        </a>
+        {% endif %}
+    </div>
+</section>
+
+{% elif section.type == 'services' %}
 <section class="py-5">
     <div class="container">
-        <h2 class="text-center mb-4">Наши услуги</h2>
+        <h2 class="text-center mb-4">Услуги</h2>
+        {% with count=section.settings.count|default:"6" %}
+        {% if section.settings.display == 'list' %}
+        <div class="list-group">
+            {% for service in live_data.services|slice:count %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ service.name }}</strong>
+                    <span class="text-muted small ms-2">{{ service.duration }} мин.</span>
+                </div>
+                <span class="badge rounded-pill btn-accent">{{ service.price }} руб.</span>
+            </div>
+            {% empty %}<p class="text-muted text-center">Услуги скоро появятся</p>{% endfor %}
+        </div>
+        {% else %}
         <div class="row g-3">
-            {% for service in services %}
+            {% for service in live_data.services|slice:count %}
             <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">{{ service.name }}</h5>
-                        <p class="card-text text-muted">{{ service.description }}</p>
-                        <p class="mb-1"><strong>{{ service.price }} руб.</strong></p>
+                        <p class="card-text text-muted small">{{ service.description }}</p>
+                        <p class="mb-1 fw-bold">{{ service.price }} руб.</p>
                         <p class="text-muted small">{{ service.duration }} мин.</p>
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <p class="text-center text-muted">Услуги скоро появятся</p>
-            {% endfor %}
+            {% empty %}<p class="text-muted text-center">Услуги скоро появятся</p>{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <div class="text-center mt-4">
+            <a href="/services/" class="btn btn-outline-secondary">Все услуги →</a>
         </div>
     </div>
 </section>
 
-<!-- Секция: Команда -->
-<section class="py-5 bg-light">
+{% elif section.type == 'team' %}
+<section class="py-5" style="background: var(--color-background);">
     <div class="container">
         <h2 class="text-center mb-4">Наша команда</h2>
+        {% with count=section.settings.count|default:"4" %}
+        {% if section.settings.display == 'list' %}
+        <div class="list-group">
+            {% for sp in live_data.specialists|slice:count %}
+            <a href="/specialist/{{ sp.pk }}/" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+                {% if sp.photo %}
+                <img src="{{ sp.photo.url }}" class="rounded-circle" style="width:50px;height:50px;object-fit:cover;">
+                {% endif %}
+                <div>
+                    <strong>{{ sp.full_name }}</strong>
+                    <p class="text-muted small mb-0">{{ sp.specialization }}</p>
+                </div>
+            </a>
+            {% empty %}<p class="text-muted text-center">Специалисты скоро появятся</p>{% endfor %}
+        </div>
+        {% else %}
         <div class="row g-3">
-            {% for specialist in specialists %}
+            {% for sp in live_data.specialists|slice:count %}
             <div class="col-md-3">
-                <a href="/specialist/{{ specialist.pk }}/" class="text-decoration-none text-dark">
+                <a href="/specialist/{{ sp.pk }}/" class="text-decoration-none text-dark">
                     <div class="card h-100 shadow-sm text-center">
-                        {% if specialist.photo %}
-                        <img src="{{ specialist.photo.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                        {% if sp.photo %}
+                        <img src="{{ sp.photo.url }}" class="card-img-top" style="height:200px;object-fit:cover;">
+                        {% else %}
+                        <div style="height:200px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
+                            <span style="font-size:48px;color:#ccc;">👤</span>
+                        </div>
                         {% endif %}
                         <div class="card-body">
-                            <h6 class="card-title">{{ specialist.full_name }}</h6>
-                            <p class="text-muted small">{{ specialist.specialization }}</p>
+                            <h6 class="card-title mb-1">{{ sp.full_name }}</h6>
+                            <p class="text-muted small mb-0">{{ sp.specialization }}</p>
                         </div>
                     </div>
                 </a>
             </div>
-            {% empty %}
-            <p class="text-center text-muted">Специалисты скоро появятся</p>
-            {% endfor %}
+            {% empty %}<p class="text-muted text-center">Специалисты скоро появятся</p>{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <div class="text-center mt-4">
+            <a href="/team/" class="btn btn-outline-secondary">Вся команда →</a>
         </div>
     </div>
 </section>
 
-<!-- Секция: Портфолио -->
-<section class="py-5">
+{% elif section.type == 'portfolio' %}
+<section class="py-5" style="background:#f8f9fa;">
     <div class="container">
         <h2 class="text-center mb-4">Портфолио</h2>
-        <div class="row g-3">
-            {% for work in portfolio %}
-            <div class="col-md-3">
-                <div class="card shadow-sm">
+        {% with count=section.settings.count|default:"6" %}
+        <div class="row g-2">
+            {% for work in live_data.portfolio|slice:count %}
+            <div class="{% if section.settings.display == 'ribbon' %}col-md-2{% else %}col-md-3{% endif %}">
+                <div class="card overflow-hidden shadow-sm">
                     {% if work.photo_watermarked %}
-                    <img src="{{ work.photo_watermarked.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    <img src="{{ work.photo_watermarked.url }}" class="card-img-top"
+                         style="height:{% if section.settings.display == 'ribbon' %}120px{% else %}200px{% endif %};object-fit:cover;">
                     {% elif work.photo_original %}
-                    <img src="{{ work.photo_original.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    <img src="{{ work.photo_original.url }}" class="card-img-top"
+                         style="height:{% if section.settings.display == 'ribbon' %}120px{% else %}200px{% endif %};object-fit:cover;">
                     {% endif %}
-                    <div class="card-body p-2">
-                        <p class="small text-muted mb-0">{{ work.specialist.full_name }}</p>
-                    </div>
                 </div>
             </div>
-            {% empty %}
-            <p class="text-center text-muted">Работы скоро появятся</p>
-            {% endfor %}
+            {% empty %}<p class="text-muted text-center">Работы скоро появятся</p>{% endfor %}
         </div>
+        {% endwith %}
         <div class="text-center mt-4">
-            <a href="/portfolio/" class="btn btn-primary">Смотреть все работы</a>
+            <a href="/portfolio/" class="btn btn-outline-secondary">Все работы →</a>
         </div>
     </div>
 </section>
 
-<!-- Секция: Новости -->
-{% if posts %}
-<section class="py-5 bg-light">
+{% elif section.type == 'news' %}
+<section class="py-5">
     <div class="container">
         <h2 class="text-center mb-4">Новости и акции</h2>
+        {% with count=section.settings.count|default:"3" %}
+        {% if section.settings.display == 'list' %}
+        <div class="list-group">
+            {% for post in live_data.news|slice:count %}
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ post.title }}</strong>
+                    <span class="badge btn-accent">{{ post.get_post_type_display }}</span>
+                </div>
+                <p class="text-muted small mb-0">{{ post.body|truncatewords:15 }}</p>
+            </div>
+            {% empty %}<p class="text-muted text-center">Новостей пока нет</p>{% endfor %}
+        </div>
+        {% else %}
         <div class="row g-3">
-            {% for post in posts %}
+            {% for post in live_data.news|slice:count %}
             <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
                     {% if post.photo %}
-                    <img src="{{ post.photo.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                    <img src="{{ post.photo.url }}" class="card-img-top" style="height:180px;object-fit:cover;">
                     {% endif %}
                     <div class="card-body">
-                        <span class="badge mb-2" style="background-color: var(--color-accent);">
-                            {{ post.get_post_type_display }}
-                        </span>
+                        <span class="badge mb-2 btn-accent">{{ post.get_post_type_display }}</span>
                         <h6 class="card-title">{{ post.title }}</h6>
                         <p class="card-text text-muted small">{{ post.body|truncatewords:20 }}</p>
                     </div>
                 </div>
             </div>
-            {% endfor %}
+            {% empty %}<p class="text-muted text-center">Новостей пока нет</p>{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <div class="text-center mt-4">
+            <a href="/news/" class="btn btn-outline-secondary">Все новости →</a>
         </div>
     </div>
 </section>
-{% endif %}
 
-<!-- Секция: Товары -->
-{% if products %}
-<section class="py-5">
+{% elif section.type == 'products' %}
+<section class="py-5" style="background:#f8f9fa;">
     <div class="container">
         <h2 class="text-center mb-4">Товары</h2>
+        {% with count=section.settings.count|default:"4" %}
+        {% if section.settings.display == 'list' %}
+        <div class="list-group">
+            {% for product in live_data.products|slice:count %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ product.name }}</strong>
+                    <p class="text-muted small mb-0">{{ product.description|truncatewords:10 }}</p>
+                </div>
+                <strong>{{ product.price }} руб.</strong>
+            </div>
+            {% empty %}<p class="text-muted text-center">Товаров пока нет</p>{% endfor %}
+        </div>
+        {% else %}
         <div class="row g-3">
-            {% for product in products %}
+            {% for product in live_data.products|slice:count %}
             <div class="col-md-3">
                 <div class="card h-100 shadow-sm">
                     {% if product.photo %}
-                    <img src="{{ product.photo.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                    <img src="{{ product.photo.url }}" class="card-img-top" style="height:180px;object-fit:cover;">
                     {% endif %}
                     <div class="card-body">
                         <h6 class="card-title">{{ product.name }}</h6>
                         <p class="text-muted small">{{ product.description|truncatewords:10 }}</p>
-                        <p><strong>{{ product.price }} руб.</strong></p>
+                        <strong>{{ product.price }} руб.</strong>
                     </div>
+                </div>
+            </div>
+            {% empty %}<p class="text-muted text-center">Товаров пока нет</p>{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <div class="text-center mt-4">
+            <a href="/products/" class="btn btn-outline-secondary">Все товары →</a>
+        </div>
+    </div>
+</section>
+
+{% elif section.type == 'text_image' %}
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            {% if section.settings.image_position == 'right' %}
+            <div class="col-md-6">
+                <h2>{{ section.settings.title }}</h2>
+                <p class="text-muted">{{ section.settings.body }}</p>
+            </div>
+            <div class="col-md-6">
+                {% if section.settings.image %}
+                <img src="/media/{{ section.settings.image }}" class="img-fluid rounded shadow-sm">
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="col-md-6">
+                {% if section.settings.image %}
+                <img src="/media/{{ section.settings.image }}" class="img-fluid rounded shadow-sm">
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <h2>{{ section.settings.title }}</h2>
+                <p class="text-muted">{{ section.settings.body }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% elif section.type == 'steps' %}
+<section class="py-5" style="background:#f8f9fa;">
+    <div class="container">
+        <h2 class="text-center mb-4">{{ section.settings.title|default:"Как это работает" }}</h2>
+        <div class="row g-3 justify-content-center">
+            {% for step in section.settings.steps_json %}
+            <div class="col-md-3 text-center">
+                <div class="card h-100 shadow-sm p-3">
+                    <div class="mb-3 fw-bold" style="font-size:2rem;color:var(--color-accent);">
+                        {{ forloop.counter }}
+                    </div>
+                    <h6>{{ step.title }}</h6>
+                    <p class="text-muted small">{{ step.text }}</p>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
-{% endif %}
 
-<!-- Секция: Онлайн-запись -->
-<section class="py-5 bg-light" id="booking">
+{% elif section.type == 'table' %}
+<section class="py-5">
     <div class="container">
-        <h2 class="text-center mb-4">Онлайн-запись</h2>
+        {% if section.settings.title %}
+        <h2 class="text-center mb-4">{{ section.settings.title }}</h2>
+        {% endif %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead style="background:var(--color-primary);color:#fff;">
+                    <tr>
+                        {% for header in section.settings.table_json.headers %}
+                        <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in section.settings.table_json.rows %}
+                    <tr>
+                        {% for cell in row %}<td>{{ cell }}</td>{% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{% elif section.type == 'booking' %}
+<section class="py-5" id="booking">
+    <div class="container">
+        <h2 class="text-center mb-4">{{ section.settings.title|default:"Онлайн-запись" }}</h2>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow-sm p-4">
-
                     <div id="booking-success" class="alert alert-success d-none">
                         Вы успешно записаны! Ожидайте подтверждения.
                     </div>
                     <div id="booking-error" class="alert alert-danger d-none"></div>
-
                     <div id="booking-form-wrapper">
                         <div class="mb-3">
                             <label class="form-label">Ваше имя</label>
@@ -190,16 +355,27 @@
                                 {% endif %}
                             </label>
                         </div>
-                        <button id="b-submit" class="btn btn-primary w-100" disabled>
+                        <button id="b-submit" class="btn btn-accent w-100" disabled>
                             Записаться
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+{% endif %}
+{% endfor %}
+
+{% if not sections %}
+<div class="container py-5 text-center text-muted">
+    <p>Секции главной страницы ещё не настроены.</p>
+    <a href="/admin/" class="btn btn-outline-secondary">Перейти в админку</a>
+</div>
+{% endif %}
+
+{% endblock %}
 
 {% block extra_js %}
 <script>
@@ -216,7 +392,7 @@ function loadSlots() {
         return;
     }
 
-    fetch(`/ajax/slots/?specialist=${specialist}&service=${service}&date=${date}`)
+    fetch('/ajax/slots/?specialist=' + specialist + '&service=' + service + '&date=' + date)
         .then(r => r.json())
         .then(data => {
             timeSelect.innerHTML = '';
@@ -237,44 +413,43 @@ function loadSlots() {
 function updateSubmitButton() {
     const consent = document.getElementById('b-consent').checked;
     const time = document.getElementById('b-time').value;
-    document.getElementById('b-submit').disabled = !(consent && time);
+    const btn = document.getElementById('b-submit');
+    btn.disabled = !(consent && time);
 }
 
-document.getElementById('b-specialist').addEventListener('change', loadSlots);
-document.getElementById('b-service').addEventListener('change', loadSlots);
-document.getElementById('b-date').addEventListener('change', loadSlots);
-document.getElementById('b-consent').addEventListener('change', updateSubmitButton);
+const bSpecialist = document.getElementById('b-specialist');
+if (bSpecialist) {
+    bSpecialist.addEventListener('change', loadSlots);
+    document.getElementById('b-service').addEventListener('change', loadSlots);
+    document.getElementById('b-date').addEventListener('change', loadSlots);
+    document.getElementById('b-consent').addEventListener('change', updateSubmitButton);
 
-document.getElementById('b-submit').addEventListener('click', function() {
-    const data = new FormData();
-    data.append('full_name', document.getElementById('b-name').value);
-    data.append('phone', document.getElementById('b-phone').value);
-    data.append('specialist', document.getElementById('b-specialist').value);
-    data.append('service', document.getElementById('b-service').value);
-    data.append('date', document.getElementById('b-date').value);
-    data.append('time_start', document.getElementById('b-time').value);
-    data.append('pd_consent', 'true');
-    data.append('csrfmiddlewaretoken', csrfToken);
+    document.getElementById('b-submit').addEventListener('click', function() {
+        const data = new FormData();
+        data.append('full_name', document.getElementById('b-name').value);
+        data.append('phone', document.getElementById('b-phone').value);
+        data.append('specialist', bSpecialist.value);
+        data.append('service', document.getElementById('b-service').value);
+        data.append('date', document.getElementById('b-date').value);
+        data.append('time_start', document.getElementById('b-time').value);
+        data.append('pd_consent', 'true');
+        data.append('csrfmiddlewaretoken', csrfToken);
 
-    fetch('/ajax/book/', {
-        method: 'POST',
-        body: data,
-    })
-    .then(r => r.json())
-    .then(result => {
-        if (result.success) {
-            document.getElementById('booking-form-wrapper').classList.add('d-none');
-            document.getElementById('booking-success').classList.remove('d-none');
-            document.getElementById('booking-error').classList.add('d-none');
-        } else {
-            const err = document.getElementById('booking-error');
-            err.textContent = result.error;
-            err.classList.remove('d-none');
-            document.getElementById('booking-success').classList.add('d-none');
-        }
+        fetch('/ajax/book/', { method: 'POST', body: data })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    document.getElementById('booking-form-wrapper').classList.add('d-none');
+                    document.getElementById('booking-success').classList.remove('d-none');
+                    document.getElementById('booking-error').classList.add('d-none');
+                } else {
+                    const err = document.getElementById('booking-error');
+                    err.textContent = result.error;
+                    err.classList.remove('d-none');
+                    document.getElementById('booking-success').classList.add('d-none');
+                }
+            });
     });
-});
+}
 </script>
-{% endblock %}
-
 {% endblock %}
