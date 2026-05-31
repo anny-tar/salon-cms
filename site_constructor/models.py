@@ -54,42 +54,6 @@ class SiteSettings(models.Model):
     watermark_text = models.CharField('Текст водяного знака', max_length=100, blank=True)
     watermark_opacity = models.FloatField('Прозрачность (0.1 — 1.0)', default=0.3)
 
-    # Баннер (секция 1, ручной ввод)
-    banner_title = models.CharField('Баннер: заголовок', max_length=255, blank=True)
-    banner_subtitle = models.CharField('Баннер: подзаголовок', max_length=255, blank=True)
-    banner_image = models.ImageField('Баннер: фоновое фото', upload_to='branding/', null=True, blank=True)
-    banner_cta_text = models.CharField('Баннер: текст кнопки', max_length=100, blank=True, default='Записаться')
-
-    # Текст + Изображение (секция 6, ручной ввод)
-    text_image_title = models.CharField('Блок текст+фото: заголовок', max_length=255, blank=True)
-    text_image_body = models.TextField('Блок текст+фото: текст', blank=True)
-    text_image_photo = models.ImageField('Блок текст+фото: фото', upload_to='branding/', null=True, blank=True)
-
-    # Шаги (секция 8, ручной ввод) — хранятся в JSON
-    steps_title = models.CharField('Шаги: заголовок', max_length=255, blank=True, default='Как это работает')
-    steps_config = models.JSONField(
-        'Шаги: список',
-        default=list,
-        blank=True,
-        help_text='Пример: [{"title": "Запись", "text": "Выберите услугу онлайн"}]'
-    )
-
-    # Таблица (секция 9, ручной ввод)
-    table_title = models.CharField('Таблица: заголовок', max_length=255, blank=True)
-    table_config = models.JSONField(
-        'Таблица: данные',
-        default=dict,
-        blank=True,
-        help_text='Пример: {"headers": ["Услуга","Цена"], "rows": [["Маникюр","2500"]]}'
-    )
-
-    # Конструктор секций
-    sections_config = models.JSONField(
-        'Конфигурация секций',
-        default=list,
-        blank=True,
-        help_text='Порядок и видимость секций главной страницы'
-    )
 
     class Meta:
         verbose_name = 'Настройки сайта'
@@ -106,3 +70,47 @@ class SiteSettings(models.Model):
     def get(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+    
+class Section(models.Model):
+
+    TYPE_BANNER = 'banner'
+    TYPE_SERVICES = 'services'
+    TYPE_TEAM = 'team'
+    TYPE_PORTFOLIO = 'portfolio'
+    TYPE_NEWS = 'news'
+    TYPE_PRODUCTS = 'products'
+    TYPE_TEXT_IMAGE = 'text_image'
+    TYPE_STEPS = 'steps'
+    TYPE_TABLE = 'table'
+    TYPE_BOOKING = 'booking'
+
+    TYPE_CHOICES = [
+        (TYPE_BANNER,     'Баннер'),
+        (TYPE_SERVICES,   'Услуги'),
+        (TYPE_TEAM,       'О команде'),
+        (TYPE_PORTFOLIO,  'Портфолио'),
+        (TYPE_NEWS,       'Новости и акции'),
+        (TYPE_PRODUCTS,   'Товары'),
+        (TYPE_TEXT_IMAGE, 'Текст + Изображение'),
+        (TYPE_STEPS,      'Шаги'),
+        (TYPE_TABLE,      'Таблица'),
+        (TYPE_BOOKING,    'Контакты и запись'),
+    ]
+
+    site = models.ForeignKey(
+        SiteSettings,
+        on_delete=models.CASCADE,
+        related_name='sections',
+        verbose_name='Сайт',
+    )
+    type = models.CharField('Тип секции', max_length=20, choices=TYPE_CHOICES)
+    order = models.PositiveIntegerField('Порядок', default=0)
+    settings = models.JSONField('Настройки', default=dict, blank=True)
+
+    class Meta:
+        verbose_name = 'Секция'
+        verbose_name_plural = 'Секции'
+        ordering = ['order']
+
+    def __str__(self):
+        return f'{self.get_type_display()} (позиция {self.order})'
