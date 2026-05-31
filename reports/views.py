@@ -1,15 +1,25 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.timezone import now
 from appointments.models import Appointment
 from specialists.models import Specialist
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from io import BytesIO
+from django.core.exceptions import PermissionDenied
 
 
-@staff_member_required
+def owner_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+            return redirect_to_login(request.get_full_path())
+        if not (request.user.is_superuser or request.user.groups.filter(name='Владелец').exists()):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+@owner_required
 def income_report(request):
     specialists = Specialist.objects.filter(is_active=True)
     selected_specialist_id = request.GET.get('specialist')

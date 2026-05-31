@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
 
 app_name = 'public'
@@ -9,4 +10,6 @@ urlpatterns = [
     path('specialist/<int:pk>/', views.specialist_detail, name='specialist_detail'),
     path('ajax/slots/', views.get_available_slots, name='get_slots'),
     path('ajax/book/', views.book_appointment, name='book'),
+    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

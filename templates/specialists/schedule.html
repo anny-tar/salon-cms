@@ -2,7 +2,11 @@
 {% block content %}
 <div class="container py-4">
     <h4 class="mb-3">Моё расписание — {{ specialist.full_name }}</h4>
-
+    
+    <a href="/specialist/my/portfolio/upload/" class="btn btn-outline-primary btn-sm">
+        + Загрузить фото из архива
+    </a>
+    
     <!-- Переключение дат -->
     <div class="d-flex align-items-center gap-2 mb-4">
         <a href="?date={{ selected_date|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm">Сегодня</a>

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <a href="/specialist/my/" class="btn btn-outline-secondary btn-sm mb-3">← Назад</a>
+
+    <div class="row">
+        <!-- Карточка записи -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>{{ appointment.client.full_name }}</h5>
+                    <p class="text-muted mb-1">{{ appointment.client.phone }}</p>
+                    <hr>
+                    <p><strong>Услуга:</strong> {{ appointment.service.name }}</p>
+                    <p><strong>Дата:</strong> {{ appointment.date }}</p>
+                    <p><strong>Время:</strong> {{ appointment.time_start|time:"H:i" }} — {{ appointment.time_end|time:"H:i" }}</p>
+                    <p><strong>Статус:</strong>
+                        <span class="badge
+                            {% if appointment.status == 'pending' %}bg-warning text-dark
+                            {% elif appointment.status == 'confirmed' %}bg-success
+                            {% elif appointment.status == 'in_progress' %}bg-primary
+                            {% elif appointment.status == 'completed' %}bg-secondary
+                            {% elif appointment.status == 'no_show' %}bg-warning text-dark
+                            {% elif appointment.status == 'cancelled' %}bg-danger
+                            {% endif %}">
+                            {{ appointment.get_status_display }}
+                        </span>
+                    </p>
+
+                    {% if appointment.reference_photo %}
+                    <p><strong>Референс клиента:</strong></p>
+                    <img src="{{ appointment.reference_photo.url }}" class="img-fluid rounded" style="max-height:200px;">
+                    {% endif %}
+
+                    {% if appointment.comment %}
+                    <p class="mt-2"><strong>Комментарий:</strong> {{ appointment.comment }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Смена статуса -->
+            {% if appointment.status not in 'completed,cancelled,no_show' %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h6>Сменить статус</h6>
+                    <form method="post" action="/specialist/my/appointment/{{ appointment.pk }}/change-status/">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% if appointment.status == 'confirmed' %}
+                            <button name="status" value="in_progress" class="btn btn-primary btn-sm">В процессе</button>
+                            {% endif %}
+                            {% if appointment.status == 'in_progress' %}
+                            <button name="status" value="completed" class="btn btn-success btn-sm">Завершена</button>
+                            {% endif %}
+                            <button name="status" value="no_show" class="btn btn-warning btn-sm">Не явился</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Загрузка фото -->
+        <!-- Загрузка фото -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h6>Фото результата</h6>
+
+                    {% if not is_completed %}
+                    <div class="alert alert-secondary mb-0">
+                        Загрузка фото будет доступна после завершения визита
+                    </div>
+
+                    {% elif has_consent %}
+                    <div id="upload-success" class="alert alert-success d-none">Фото успешно добавлено в портфолио!</div>
+                    <div id="upload-error" class="alert alert-danger d-none"></div>
+                    <div id="upload-form">
+                        <input type="file" id="photo-input" class="form-control mb-2" accept="image/*">
+                        <button id="upload-btn" class="btn btn-primary btn-sm">
+                            Загрузить в портфолио
+                        </button>
+                    </div>
+
+                    {% else %}
+                    <div class="alert alert-warning mb-0">
+                        Согласие не загружено — обратитесь к администратору
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- Прошлые работы с этим клиентом -->
+            {% if past_works %}
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Прошлые работы с этим клиентом</h6>
+                    <div class="row g-2">
+                        {% for work in past_works %}
+                        <div class="col-4">
+                            {% if work.photo_watermarked %}
+                            <img src="{{ work.photo_watermarked.url }}" class="img-fluid rounded" style="height:80px; object-fit:cover;">
+                            {% elif work.photo_original %}
+                            <img src="{{ work.photo_original.url }}" class="img-fluid rounded" style="height:80px; object-fit:cover;">
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if has_consent %}
+{% block extra_js %}
+<script>
+document.getElementById('upload-btn').addEventListener('click', function() {
+    const photo = document.getElementById('photo-input').files[0];
+    if (!photo) {
+        alert('Выберите фото');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('photo', photo);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch('/specialist/my/appointment/{{ appointment.pk }}/upload-photo/', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(r => r.json())
+    .then(result => {
+        if (result.success) {
+            document.getElementById('upload-form').classList.add('d-none');
+            document.getElementById('upload-success').classList.remove('d-none');
+        } else {
+            const err = document.getElementById('upload-error');
+            err.textContent = result.error;
+            err.classList.remove('d-none');
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endif %}
+
+{% endblock %}

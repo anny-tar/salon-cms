@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <a href="/specialist/my/" class="btn btn-outline-secondary btn-sm mb-3">← Назад</a>
+    <h4 class="mb-4">Загрузка фото из архива</h4>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+
+                {% if success %}
+                <div class="alert alert-success">Фото успешно добавлено в портфолио!</div>
+                {% endif %}
+
+                {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Фото</label>
+                        <input type="file" name="photo" class="form-control" accept="image/*" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Категория услуги</label>
+                        <select name="category" class="form-select">
+                            <option value="">Без категории</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.pk }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="liability" id="liability" required>
+                        <label class="form-check-label" for="liability">
+                            Подтверждаю что имею согласие клиента на публикацию данного фото и беру личную ответственность
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Загрузить в портфолио
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
