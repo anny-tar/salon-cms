@@ -66,15 +66,31 @@ def portfolio(request):
 
 
 def specialist_detail(request, pk):
+    from services.models import ServiceCategory
     specialist = get_object_or_404(Specialist, pk=pk, is_active=True)
+
     works = PortfolioWork.objects.filter(
         specialist=specialist,
-        is_visible=True
+        is_visible=True,
     ).select_related('service_category')
+
+    categories = ServiceCategory.objects.filter(
+        portfoliowork__specialist=specialist,
+        portfoliowork__is_visible=True,
+    ).distinct()
+
+    selected_category = request.GET.get('category')
+    if selected_category:
+        works = works.filter(service_category_id=selected_category)
+
+    documents = specialist.documents.all()
 
     context = {
         'specialist': specialist,
         'works': works,
+        'categories': categories,
+        'selected_category': selected_category,
+        'documents': documents,
     }
     return render(request, 'public/specialist.html', context)
 
@@ -157,7 +173,7 @@ def book_appointment(request):
         defaults={'full_name': full_name}
     )
 
-    Appointment.objects.create(
+    appointment = Appointment.objects.create(
         client=client,
         specialist=specialist,
         service=service,
@@ -165,6 +181,8 @@ def book_appointment(request):
         time_start=time_start,
         status=Appointment.STATUS_PENDING,
         pd_consent_datetime=timezone.now(),
+        reference_photo=request.FILES.get('reference_photo'),
+        reference_photo_2=request.FILES.get('reference_photo_2'),
     )
 
     return JsonResponse({'success': True})

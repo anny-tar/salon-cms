@@ -1,37 +1,101 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <section class="py-5">
     <div class="container">
-        <div class="row mb-5">
+
+        <!-- Шапка специалиста -->
+        <div class="row g-4 mb-5 align-items-center">
             <div class="col-md-3 text-center">
                 {% if specialist.photo %}
-                <img src="{{ specialist.photo.url }}" class="img-fluid rounded-circle mb-3" style="width:200px; height:200px; object-fit:cover;">
+                <img src="{{ specialist.photo.url }}"
+                     class="rounded-circle shadow"
+                     style="width:180px;height:180px;object-fit:cover;">
+                {% else %}
+                <div class="rounded-circle shadow mx-auto d-flex align-items-center justify-content-center"
+                     style="width:180px;height:180px;background:var(--color-background);">
+                    <span style="font-size:72px;color:#ccc;">👤</span>
+                </div>
                 {% endif %}
             </div>
             <div class="col-md-9">
-                <h2>{{ specialist.full_name }}</h2>
-                <p class="text-muted">{{ specialist.specialization }}</p>
+                <h2 style="color:var(--color-primary);">{{ specialist.full_name }}</h2>
+                <p class="text-muted fs-5 mb-3">{{ specialist.specialization }}</p>
+                {% if specialist.description %}
                 <p>{{ specialist.description }}</p>
+                {% endif %}
+                <a href="/#booking" class="btn btn-accent px-4">Записаться к специалисту</a>
             </div>
         </div>
 
-        <h4 class="mb-4">Работы</h4>
-        <div class="row g-3">
-            {% for work in works %}
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    {% if work.photo_watermarked %}
-                    <img src="{{ work.photo_watermarked.url }}" class="card-img-top" style="height:220px; object-fit:cover;">
-                    {% elif work.photo_original %}
-                    <img src="{{ work.photo_original.url }}" class="card-img-top" style="height:220px; object-fit:cover;">
-                    {% endif %}
+        <!-- Документы об образовании -->
+        {% if documents %}
+        <div class="mb-5">
+            <h4 class="mb-3" style="color:var(--color-secondary);">Документы об образовании</h4>
+            <div class="row g-3">
+                {% for doc in documents %}
+                <div class="col-md-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <span style="font-size:2rem;">📄</span>
+                            <div>
+                                <p class="mb-1 fw-500">{{ doc.title }}</p>
+                                <a href="{{ doc.file.url }}" target="_blank"
+                                   class="small" style="color:var(--color-accent);">
+                                    Открыть
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% empty %}
-            <p class="text-muted">Работ пока нет</p>
-            {% endfor %}
         </div>
+        {% endif %}
+
+        <!-- Портфолио специалиста -->
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 style="color:var(--color-secondary);">Работы</h4>
+                {% if categories %}
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="/specialist/{{ specialist.pk }}/"
+                       class="btn btn-sm {% if not selected_category %}btn-accent{% else %}btn-outline-secondary{% endif %}">
+                        Все
+                    </a>
+                    {% for cat in categories %}
+                    <a href="/specialist/{{ specialist.pk }}/?category={{ cat.pk }}"
+                       class="btn btn-sm {% if selected_category == cat.pk|stringformat:'s' %}btn-accent{% else %}btn-outline-secondary{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="row g-3">
+                {% for work in works %}
+                <div class="col-md-3">
+                    <div class="card shadow-sm overflow-hidden">
+                        {% if work.photo_watermarked %}
+                        <img src="{{ work.photo_watermarked.url }}" class="card-img-top"
+                             style="height:220px;object-fit:cover;">
+                        {% elif work.photo_original %}
+                        <img src="{{ work.photo_original.url }}" class="card-img-top"
+                             style="height:220px;object-fit:cover;">
+                        {% endif %}
+                        {% if work.service_category %}
+                        <div class="card-body p-2">
+                            <small class="text-muted">{{ work.service_category.name }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">Работ пока нет</p>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 </section>
 {% endblock %}
