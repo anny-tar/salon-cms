@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Наша команда</h2>
+        <div class="row g-4">
+            {% for specialist in specialists %}
+            <div class="col-md-3">
+                <a href="/specialist/{{ specialist.pk }}/" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow-sm text-center">
+                        {% if specialist.photo %}
+                        <img src="{{ specialist.photo.url }}" class="card-img-top"
+                             style="height:220px;object-fit:cover;">
+                        {% else %}
+                        <div style="height:220px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
+                            <span style="font-size:64px;color:#ccc;">👤</span>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">{{ specialist.full_name }}</h6>
+                            <p class="text-muted small mb-0">{{ specialist.specialization }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <p class="text-muted">Специалисты скоро появятся</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

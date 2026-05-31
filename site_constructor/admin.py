@@ -1,24 +1,29 @@
 from django.contrib import admin
-from adminsortable2.admin import SortableInlineAdminMixin, SortableAdminBase
+from ordered_model.admin import OrderedStackedInline, OrderedInlineModelAdminMixin
 from .models import SiteSettings, Section
 
 
-class SectionInline(SortableInlineAdminMixin, admin.StackedInline):
+class SectionInline(OrderedStackedInline):
     model = Section
+    fields = ('type', 'settings', 'order', 'move_up_down_links')
+    readonly_fields = ('order', 'move_up_down_links')
     extra = 0
-    fields = ('type', 'settings')
+    ordering = ('order',)
 
     class Media:
         js = ('site_constructor/section_admin.js',)
 
 
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(SortableAdminBase, admin.ModelAdmin):
+class SiteSettingsAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     inlines = [SectionInline]
 
     fieldsets = (
         ('Основное', {
             'fields': ('salon_name', 'phone', 'email', 'address', 'logo', 'favicon')
+        }),
+        ('Страницы сайта', {
+            'fields': ('show_services', 'show_team', 'show_portfolio', 'show_news', 'show_products')
         }),
         ('Брендинг', {
             'fields': ('color_primary', 'color_secondary', 'color_accent', 'color_background', 'font')

@@ -53,26 +53,24 @@ function buildForm(jQ, type, container, currentSettings) {
         return;
     }
 
-    let html = '<div style="background:#f8f8f8; padding:12px; border-radius:6px; margin-top:8px;">';
-    html += '<p style="font-weight:bold; margin-bottom:10px; color:#333;">Настройки секции:</p>';
+    let html = '<div style="background:#f0f4f8;padding:14px;border-radius:6px;margin-top:8px;border:1px solid #d0d7de;">';
+    html += '<p style="font-weight:600;margin-bottom:12px;color:#24292f;font-size:13px;">⚙ Настройки секции</p>';
 
     for (const [key, field] of Object.entries(fields)) {
         const val = currentSettings[key] !== undefined ? currentSettings[key] : '';
         html += '<div style="margin-bottom:10px;">';
-        html += '<label style="display:block; font-weight:500; margin-bottom:4px; color:#555;">' + field.label + '</label>';
+        html += '<label style="display:block;font-size:12px;font-weight:500;margin-bottom:4px;color:#57606a;">' + field.label + '</label>';
 
         if (field.type === 'text') {
-            html += '<input type="text" data-key="' + key + '" value="' + val + '" placeholder="' + (field.placeholder || '') + '" style="width:100%; padding:6px 8px; border:1px solid #ccc; border-radius:4px;">';
+            html += '<input type="text" data-key="' + key + '" value="' + val + '" placeholder="' + (field.placeholder || '') + '" style="width:100%;padding:6px 10px;border:1px solid #d0d7de;border-radius:4px;font-size:13px;">';
         } else if (field.type === 'textarea') {
-            html += '<textarea data-key="' + key + '" rows="3" placeholder="' + (field.placeholder || '') + '" style="width:100%; padding:6px 8px; border:1px solid #ccc; border-radius:4px;">' + val + '</textarea>';
+            html += '<textarea data-key="' + key + '" rows="3" placeholder="' + (field.placeholder || '') + '" style="width:100%;padding:6px 10px;border:1px solid #d0d7de;border-radius:4px;font-size:12px;font-family:monospace;">' + val + '</textarea>';
         } else if (field.type === 'select') {
-            html += '<select data-key="' + key + '" style="width:100%; padding:6px 8px; border:1px solid #ccc; border-radius:4px;">';
+            html += '<select data-key="' + key + '" style="width:100%;padding:6px 10px;border:1px solid #d0d7de;border-radius:4px;font-size:13px;">';
             for (const opt of field.options) {
                 if (typeof opt === 'string' && opt.includes(':')) {
                     const parts = opt.split(':');
-                    const optVal = parts[0];
-                    const optLabel = parts[1];
-                    html += '<option value="' + optVal + '"' + (val === optVal ? ' selected' : '') + '>' + optLabel + '</option>';
+                    html += '<option value="' + parts[0] + '"' + (val === parts[0] ? ' selected' : '') + '>' + parts[1] + '</option>';
                 } else {
                     html += '<option value="' + opt + '"' + (val === String(opt) ? ' selected' : '') + '>' + opt + '</option>';
                 }
@@ -86,36 +84,41 @@ function buildForm(jQ, type, container, currentSettings) {
     container.html(html);
 
     container.find('input, textarea, select').on('change input', function() {
-        syncToJson(jQ, container);
+        const result = {};
+        container.find('[data-key]').each(function() {
+            result[jQ(this).data('key')] = jQ(this).val();
+        });
+        container.closest('.inline-related').find('textarea[name$="-settings"]').val(JSON.stringify(result, null, 2));
     });
-}
-
-function syncToJson(jQ, container) {
-    const result = {};
-    container.find('[data-key]').each(function() {
-        result[jQ(this).data('key')] = jQ(this).val();
-    });
-    container.closest('.inline-related').find('textarea[name$="-settings"]').val(JSON.stringify(result));
 }
 
 function initSection(jQ, row) {
-    const typeSelect = row.find('select[name$="-type"]');
-    const settingsTextarea = row.find('textarea[name$="-settings"]');
+    if (row.data('section-initialized')) return;
+    row.data('section-initialized', true);
 
-    settingsTextarea.closest('.form-row').hide();
+    // OrderedStackedInline использует другие классы — ищем шире
+    const typeSelect = row.find('select').filter(function() {
+        return jQ(this).attr('name') && jQ(this).attr('name').indexOf('type') !== -1;
+    });
+    const settingsTextarea = row.find('textarea').filter(function() {
+        return jQ(this).attr('name') && jQ(this).attr('name').indexOf('settings') !== -1;
+    });
+
+    if (!typeSelect.length || !settingsTextarea.length) return;
+
+    // Прячем поле settings
+    settingsTextarea.closest('div.form-row, p.field-settings, div.field-settings').hide();
 
     let dynamicContainer = row.find('.section-dynamic-fields-container');
     if (!dynamicContainer.length) {
         dynamicContainer = jQ('<div class="section-dynamic-fields-container"></div>');
-        settingsTextarea.closest('.form-row').after(dynamicContainer);
+        settingsTextarea.parent().after(dynamicContainer);
     }
 
     function render() {
         const type = typeSelect.val();
         let currentSettings = {};
-        try {
-            currentSettings = JSON.parse(settingsTextarea.val() || '{}');
-        } catch(e) {}
+        try { currentSettings = JSON.parse(settingsTextarea.val() || '{}'); } catch(e) {}
         buildForm(jQ, type, dynamicContainer, currentSettings);
     }
 
@@ -132,78 +135,38 @@ function initAll(jQ) {
         });
     }
 
-    // Пробуем несколько раз с задержкой — Jazzmin рендерит медленно
-    setTimeout(tryInit, 500);
-    setTimeout(tryInit, 1000);
-    setTimeout(tryInit, 2000);
+    setTimeout(tryInit, 300);
+    setTimeout(tryInit, 800);
+    setTimeout(tryInit, 1500);
 
-    // При добавлении новой строки через кнопку "Добавить"
-    jQ(document).on('formset:added', function(event, row, formsetName) {
-        setTimeout(function() {
-            initSection(jQ, jQ(row));
-        }, 100);
+    jQ(document).on('formset:added', function(event, row) {
+        setTimeout(function() { initSection(jQ, jQ(row)); }, 200);
     });
 
-    // MutationObserver как запасной вариант
-    const observer = new MutationObserver(function(mutations) {
+    new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(node) {
-                if (node.nodeType === 1) {
-                    const jqNode = jQ(node);
-                    if (jqNode.hasClass('inline-related') && !jqNode.hasClass('empty-form')) {
-                        setTimeout(function() { initSection(jQ, jqNode); }, 100);
-                    }
-                    jqNode.find('.inline-related').not('.empty-form').each(function() {
-                        const el = jQ(this);
-                        if (!el.data('section-initialized')) {
-                            setTimeout(function() { initSection(jQ, el); }, 100);
-                        }
-                    });
+                if (node.nodeType !== 1) return;
+                const el = jQ(node);
+                if (el.hasClass('inline-related') && !el.hasClass('empty-form')) {
+                    setTimeout(function() { initSection(jQ, el); }, 200);
                 }
+                el.find('.inline-related').not('.empty-form').each(function() {
+                    const child = jQ(this);
+                    if (!child.data('section-initialized')) {
+                        setTimeout(function() { initSection(jQ, child); }, 200);
+                    }
+                });
             });
         });
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-}
-
-function initSection(jQ, row) {
-    // Защита от двойной инициализации
-    if (row.data('section-initialized')) return;
-    row.data('section-initialized', true);
-
-    const typeSelect = row.find('select[name$="-type"]');
-    const settingsTextarea = row.find('textarea[name$="-settings"]');
-
-    if (!typeSelect.length || !settingsTextarea.length) return;
-
-    settingsTextarea.closest('.form-row, .field-settings').hide();
-
-    let dynamicContainer = row.find('.section-dynamic-fields-container');
-    if (!dynamicContainer.length) {
-        dynamicContainer = jQ('<div class="section-dynamic-fields-container"></div>');
-        settingsTextarea.closest('.form-row, .field-settings').after(dynamicContainer);
-    }
-
-    function render() {
-        const type = typeSelect.val();
-        let currentSettings = {};
-        try {
-            currentSettings = JSON.parse(settingsTextarea.val() || '{}');
-        } catch(e) {}
-        buildForm(jQ, type, dynamicContainer, currentSettings);
-    }
-
-    typeSelect.on('change', render);
-    render();
+    }).observe(document.body, { childList: true, subtree: true });
 }
 
 var waitForJQuery = setInterval(function() {
     if (typeof django !== 'undefined' && typeof django.jQuery !== 'undefined') {
         clearInterval(waitForJQuery);
-        var jQ = django.jQuery;
-        jQ(document).ready(function() {
-            initAll(jQ);
+        django.jQuery(document).ready(function() {
+            initAll(django.jQuery);
         });
     }
 }, 50);

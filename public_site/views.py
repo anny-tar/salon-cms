@@ -23,7 +23,6 @@ def index(request):
 
     site = SiteSettings.get()
     sections = Section.objects.filter(site=site).order_by('order')
-
     # Подготавливаем данные для живых секций
     live_data = {
         'specialists': Specialist.objects.filter(is_active=True),
@@ -169,3 +168,54 @@ def book_appointment(request):
     )
 
     return JsonResponse({'success': True})
+
+
+def services_page(request):
+    from site_constructor.models import SiteSettings
+    site = SiteSettings.get()
+    if not site.show_services:
+        from django.http import Http404
+        raise Http404
+    services = Service.objects.filter(is_active=True).select_related('category')
+    categories = ServiceCategory.objects.all()
+    selected_category = request.GET.get('category')
+    if selected_category:
+        services = services.filter(category_id=selected_category)
+    return render(request, 'public/services.html', {
+        'services': services,
+        'categories': categories,
+        'selected_category': selected_category,
+    })
+
+
+def team_page(request):
+    from site_constructor.models import SiteSettings
+    site = SiteSettings.get()
+    if not site.show_team:
+        from django.http import Http404
+        raise Http404
+    specialists = Specialist.objects.filter(is_active=True)
+    return render(request, 'public/team.html', {'specialists': specialists})
+
+
+def news_page(request):
+    from site_constructor.models import SiteSettings
+    site = SiteSettings.get()
+    if not site.show_news:
+        from django.http import Http404
+        raise Http404
+    post_type = request.GET.get('type')
+    posts = Post.objects.filter(is_published=True)
+    if post_type:
+        posts = posts.filter(post_type=post_type)
+    return render(request, 'public/news.html', {'posts': posts, 'post_type': post_type})
+
+
+def products_page(request):
+    from site_constructor.models import SiteSettings
+    site = SiteSettings.get()
+    if not site.show_products:
+        from django.http import Http404
+        raise Http404
+    products = Product.objects.filter(is_active=True)
+    return render(request, 'public/products.html', {'products': products})

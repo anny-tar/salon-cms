@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Услуги</h2>
+
+        {% if categories %}
+        <div class="d-flex gap-2 flex-wrap mb-4">
+            <a href="/services/" class="btn btn-sm {% if not selected_category %}btn-accent{% else %}btn-outline-secondary{% endif %}">
+                Все
+            </a>
+            {% for cat in categories %}
+            <a href="/services/?category={{ cat.pk }}"
+               class="btn btn-sm {% if selected_category == cat.pk|stringformat:'s' %}btn-accent{% else %}btn-outline-secondary{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="row g-3">
+            {% for service in services %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ service.name }}</h5>
+                        {% if service.category %}
+                        <span class="badge mb-2" style="background:var(--color-secondary);color:#fff;">
+                            {{ service.category.name }}
+                        </span>
+                        {% endif %}
+                        <p class="card-text text-muted small">{{ service.description }}</p>
+                        <p class="mb-1 fw-bold">{{ service.price }} руб.</p>
+                        <p class="text-muted small">{{ service.duration }} мин.</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/#booking" class="btn btn-accent btn-sm w-100">Записаться</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">Услуги скоро появятся</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

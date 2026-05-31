@@ -23,6 +23,13 @@ class SiteSettings(models.Model):
     email = models.EmailField('Email', blank=True)
     address = models.CharField('Адрес', max_length=255, blank=True)
 
+    # Видимость страниц
+    show_services = models.BooleanField('Показывать страницу Услуги', default=True)
+    show_team = models.BooleanField('Показывать страницу Команда', default=True)
+    show_portfolio = models.BooleanField('Показывать страницу Портфолио', default=True)
+    show_news = models.BooleanField('Показывать страницу Новости', default=False)
+    show_products = models.BooleanField('Показывать страницу Товары', default=False)
+
     # Брендинг
     color_primary = models.CharField('Основной цвет', max_length=7, default='#4F81BD')
     color_secondary = models.CharField('Вторичный цвет', max_length=7, default='#2E4057')
@@ -71,7 +78,53 @@ class SiteSettings(models.Model):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
     
-class Section(models.Model):
+from django.db import models
+from ordered_model.models import OrderedModel
+
+
+class Section(OrderedModel):
+
+    TYPE_BANNER = 'banner'
+    TYPE_SERVICES = 'services'
+    TYPE_TEAM = 'team'
+    TYPE_PORTFOLIO = 'portfolio'
+    TYPE_NEWS = 'news'
+    TYPE_PRODUCTS = 'products'
+    TYPE_TEXT_IMAGE = 'text_image'
+    TYPE_STEPS = 'steps'
+    TYPE_TABLE = 'table'
+    TYPE_BOOKING = 'booking'
+
+    TYPE_CHOICES = [
+        (TYPE_BANNER,     'Баннер'),
+        (TYPE_SERVICES,   'Услуги'),
+        (TYPE_TEAM,       'О команде'),
+        (TYPE_PORTFOLIO,  'Портфолио'),
+        (TYPE_NEWS,       'Новости и акции'),
+        (TYPE_PRODUCTS,   'Товары'),
+        (TYPE_TEXT_IMAGE, 'Текст + Изображение'),
+        (TYPE_STEPS,      'Шаги'),
+        (TYPE_TABLE,      'Таблица'),
+        (TYPE_BOOKING,    'Контакты и запись'),
+    ]
+
+    site = models.ForeignKey(
+        SiteSettings,
+        on_delete=models.CASCADE,
+        related_name='sections',
+        verbose_name='Сайт',
+    )
+    type = models.CharField('Тип секции', max_length=20, choices=TYPE_CHOICES)
+    settings = models.JSONField('Настройки', default=dict, blank=True)
+
+    order_with_respect_to = 'site'
+
+    class Meta(OrderedModel.Meta):
+        verbose_name = 'Секция'
+        verbose_name_plural = 'Секции'
+
+    def __str__(self):
+        return f'{self.get_type_display()} (позиция {self.order})'
 
     TYPE_BANNER = 'banner'
     TYPE_SERVICES = 'services'
