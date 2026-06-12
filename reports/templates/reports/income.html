@@ -1,60 +1,115 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Отчёт по доходу</title>
-</head>
-<body>
-    <h1>Отчёт по доходу специалистов</h1>
+{% extends 'base.html' %}
+{% block title %}Отчёт по доходу{% endblock %}
 
-    <form method="get">
-        <label>Специалист:
-            <select name="specialist">
-                <option value="">Все</option>
-                {% for s in specialists %}
-                <option value="{{ s.id }}" {% if selected_specialist_id == s.id|stringformat:"s" %}selected{% endif %}>
-                    {{ s.full_name }}
-                </option>
-                {% endfor %}
-            </select>
-        </label>
+{% block content %}
+<div class="container py-4">
 
-        <label>С: <input type="date" name="date_from" value="{{ date_from }}"></label>
-        <label>По: <input type="date" name="date_to" value="{{ date_to }}"></label>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 style="color: var(--color-primary);">Отчёт по доходу специалистов</h4>
+        {% if appointments %}
+        <a href="?specialist={{ selected_specialist_id|default:'' }}&date_from={{ date_from|default:'' }}&date_to={{ date_to|default:'' }}&download=1"
+           class="btn btn-accent">
+            ⬇ Скачать Excel
+        </a>
+        {% endif %}
+    </div>
 
-        <button type="submit">Показать</button>
-        <button type="submit" name="download" value="1">Скачать Excel</button>
-    </form>
+    <!-- Фильтры -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-500">Специалист</label>
+                    <select name="specialist" class="form-select">
+                        <option value="">Все специалисты</option>
+                        {% for s in specialists %}
+                        <option value="{{ s.id }}"
+                            {% if selected_specialist_id == s.id|stringformat:"s" %}selected{% endif %}>
+                            {{ s.full_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-500">С</label>
+                    <input type="date" name="date_from" class="form-control"
+                           value="{{ date_from|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-500">По</label>
+                    <input type="date" name="date_to" class="form-control"
+                           value="{{ date_to|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-accent w-100">Показать</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <table border="1" cellpadding="5">
-        <thead>
-            <tr>
-                <th>Дата</th>
-                <th>Специалист</th>
-                <th>Клиент</th>
-                <th>Услуга</th>
-                <th>Цена</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for appt in appointments %}
-            <tr>
-                <td>{{ appt.date }}</td>
-                <td>{{ appt.specialist.full_name }}</td>
-                <td>{{ appt.client.full_name }}</td>
-                <td>{{ appt.service.name }}</td>
-                <td>{{ appt.service.price }} руб.</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5">Нет данных</td></tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4"><strong>Итого:</strong></td>
-                <td><strong>{{ total }} руб.</strong></td>
-            </tr>
-        </tfoot>
-    </table>
-</body>
-</html>
+    <!-- Итог -->
+    {% if appointments %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3">
+                <p class="text-muted small mb-1">Визитов</p>
+                <h4 style="color: var(--color-primary);">{{ appointments|length }}</h4>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3">
+                <p class="text-muted small mb-1">Итого</p>
+                <h4 style="color: var(--color-accent);">{{ total }} руб.</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background: var(--color-primary); color: #fff;">
+                        <tr>
+                            <th class="px-3 py-3">Дата</th>
+                            <th class="py-3">Специалист</th>
+                            <th class="py-3">Клиент</th>
+                            <th class="py-3">Услуга</th>
+                            <th class="py-3 text-end pe-3">Цена</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in appointments %}
+                        <tr>
+                            <td class="px-3">{{ appt.date }}</td>
+                            <td>{{ appt.specialist.full_name }}</td>
+                            <td>{{ appt.client.full_name }}</td>
+                            <td>{{ appt.service.name }}</td>
+                            <td class="text-end pe-3 fw-bold">{{ appt.service.price }} руб.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: var(--color-background);">
+                            <td colspan="4" class="px-3 fw-bold text-end">Итого:</td>
+                            <td class="text-end pe-3 fw-bold"
+                                style="color: var(--color-accent);">
+                                {{ total }} руб.
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5 text-muted">
+            <p class="mb-0">Нет данных за выбранный период</p>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

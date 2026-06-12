@@ -49,7 +49,13 @@ class Appointment(models.Model):
         db_index=True,
     )
     reference_photo = models.ImageField(
-        'Референс клиента',
+        'Референс клиента 1',
+        upload_to='references/',
+        null=True,
+        blank=True,
+    )
+    reference_photo_2 = models.ImageField(
+        'Референс клиента 2',
         upload_to='references/',
         null=True,
         blank=True,

@@ -440,6 +440,10 @@ if (bSpecialist) {
         data.append('service', document.getElementById('b-service').value);
         data.append('date', document.getElementById('b-date').value);
         data.append('time_start', document.getElementById('b-time').value);
+        const ref1 = document.getElementById('b-ref1').files[0];
+        const ref2 = document.getElementById('b-ref2').files[0];
+        if (ref1) data.append('reference_photo', ref1);
+        if (ref2) data.append('reference_photo_2', ref2);
         data.append('pd_consent', 'true');
         data.append('csrfmiddlewaretoken', csrfToken);
 

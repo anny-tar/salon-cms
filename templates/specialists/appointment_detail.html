@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+    .bg-orange {
+        background-color: #fd7e14 !important;
+        color: white;
+    }
+</style>
 <div class="container py-4">
     <a href="/specialist/my/" class="btn btn-outline-secondary btn-sm mb-4">← Назад</a>
 
@@ -60,11 +66,11 @@
                                     class="btn btn-accent btn-sm">В процессе</button>
                             {% endif %}
                             {% if appointment.status == 'in_progress' %}
-                            <button name="status" value="completed"
-                                    class="btn btn-success btn-sm">Завершена</button>
+                            <button name="status" value="completed" 
+                                    class="btn btn-secondary btn-sm">Завершена</button>
                             {% endif %}
-                            <button name="status" value="no_show"
-                                    class="btn btn-warning btn-sm">Не явился</button>
+                            <button name="status" value="no_show" 
+                                    class="btn bg-orange btn-sm">Не явился</button>
                         </div>
                     </form>
                 </div>

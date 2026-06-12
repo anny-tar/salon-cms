@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+    .bg-orange {
+        background-color: #fd7e14 !important;
+        color: white;
+    }
+</style>
 <div class="container py-4">
     <h4 class="mb-3">Моё расписание — {{ specialist.full_name }}</h4>
-    
-    <a href="/specialist/my/portfolio/upload/" class="btn btn-outline-primary btn-sm">
-        + Загрузить фото из архива
-    </a>
     
     <!-- Переключение дат -->
     <div class="d-flex align-items-center gap-2 mb-4">
@@ -28,14 +30,14 @@
                     <span class="text-muted ms-2 small">{{ appt.service.name }}</span>
                 </div>
                 <span class="badge
-                    {% if appt.status == 'pending' %}bg-warning text-dark
-                    {% elif appt.status == 'confirmed' %}bg-success
-                    {% elif appt.status == 'in_progress' %}bg-primary
-                    {% elif appt.status == 'completed' %}bg-secondary
-                    {% elif appt.status == 'no_show' %}bg-warning text-dark
-                    {% elif appt.status == 'cancelled' %}bg-danger
-                    {% endif %}">
-                    {{ appt.get_status_display }}
+                {% if appt.status == 'pending' %}bg-warning
+                {% elif appt.status == 'confirmed' %}bg-success
+                {% elif appt.status == 'in_progress' %}bg-primary
+                {% elif appt.status == 'completed' %}bg-secondary
+                {% elif appt.status == 'no_show' %}bg-orange
+                {% elif appt.status == 'cancelled' %}bg-danger
+                {% endif %}">
+                {{ appt.get_status_display }}
                 </span>
             </div>
         </a>
@@ -44,5 +46,12 @@
     {% else %}
     <p class="text-muted">На этот день записей нет</p>
     {% endif %}
+
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a href="/specialist/my/portfolio/upload/" class="btn btn-outline-secondary btn-sm">
+            + Загрузить в портфолио фото из архива
+        </a>
+    </div> 
+
 </div>
 {% endblock %}
