@@ -1,0 +1,53 @@
+{% with layout=section.settings.layout|default:"img_right" %}
+<section class="public-section {{ section_bg_class }}"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
+    <div class="container">
+        {% if layout == 'img_bottom' %}
+        {# Текст сверху, фото снизу #}
+        <div class="section-header section-header--center animate-on-scroll">
+            {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+            {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+            {% if section.settings.body %}<p class="section-description">{{ section.settings.body }}</p>{% endif %}
+        </div>
+        {% if section.image %}
+        <div class="animate-on-scroll animate-scale">
+            <img src="{{ section.image.url }}" class="img-fluid rounded shadow" loading="lazy"
+                 style="width:100%;max-height:500px;object-fit:cover;" alt="{{ section.settings.title }}">
+        </div>
+        {% endif %}
+
+        {% elif layout == 'img_left' %}
+        {# Фото слева, текст справа #}
+        <div class="row align-items-center g-5">
+            <div class="col-md-5 animate-on-scroll animate-left">
+                {% if section.image %}
+                <img src="{{ section.image.url }}" class="img-fluid rounded shadow" loading="lazy"
+                     alt="{{ section.settings.title }}">
+                {% endif %}
+            </div>
+            <div class="col-md-7 animate-on-scroll animate-right">
+                {% if section.settings.title %}<h2 style="color:var(--color-secondary);">{{ section.settings.title }}</h2>{% endif %}
+                {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+                {% if section.settings.body %}<p class="text-muted">{{ section.settings.body }}</p>{% endif %}
+            </div>
+        </div>
+
+        {% else %}
+        {# Текст слева, фото справа (default) #}
+        <div class="row align-items-center g-5">
+            <div class="col-md-7 animate-on-scroll animate-left">
+                {% if section.settings.title %}<h2 style="color:var(--color-secondary);">{{ section.settings.title }}</h2>{% endif %}
+                {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+                {% if section.settings.body %}<p class="text-muted">{{ section.settings.body }}</p>{% endif %}
+            </div>
+            <div class="col-md-5 animate-on-scroll animate-right">
+                {% if section.image %}
+                <img src="{{ section.image.url }}" class="img-fluid rounded shadow" loading="lazy"
+                     alt="{{ section.settings.title }}">
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endwith %}

@@ -1,0 +1,25 @@
+{% with overlay=section.settings.overlay|default:"dark" align=section.settings.align|default:"center" %}
+<section class="banner-section"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}
+         {% if section.image %}style="background-image:url('{{ section.image.url }}');"{% else %}style="background-color:var(--color-primary);"{% endif %}>
+    <div class="banner-overlay banner-overlay--{{ overlay }}"></div>
+    <div class="banner-content banner-content--{% if overlay == 'light' %}light-overlay{% endif %} w-100">
+        <div class="container text-{{ align }}">
+            {% if section.settings.title %}
+            <h1 class="animate-on-scroll">{{ section.settings.title }}</h1>
+            {% endif %}
+            {% if section.settings.subtitle %}
+            <p class="animate-on-scroll animate-delay-1">{{ section.settings.subtitle }}</p>
+            {% endif %}
+            {% if section.settings.cta_text %}
+            <div class="animate-on-scroll animate-delay-2">
+                <button class="btn btn-accent btn-lg px-5"
+                        data-bs-toggle="modal" data-bs-target="#bookingModal">
+                    {{ section.settings.cta_text }}
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endwith %}

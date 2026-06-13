@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.get_seo_title|default:product.name }} — {{ site_settings.salon_name }}{% endblock %}
+
+{% block content %}
+<section class="public-section public-section--light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'public:index' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'public:products' %}">Товары</a></li>
+                <li class="breadcrumb-item active">{{ product.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5 align-items-start">
+            <div class="col-md-6 animate-on-scroll">
+                {% if product.photo %}
+                <img src="{{ product.photo.url }}" class="img-fluid rounded shadow" loading="lazy"
+                     alt="{{ product.alt_text|default:product.name }}"
+                     style="width:100%;max-height:480px;object-fit:cover;">
+                {% endif %}
+            </div>
+            <div class="col-md-6 animate-on-scroll animate-right">
+                <h1 style="color:var(--color-secondary);">{{ product.get_h1|default:product.name }}</h1>
+                <div class="fs-3 fw-bold text-accent mb-4">{{ product.price }} ₽</div>
+                {% if product.description %}
+                <div class="text-muted" style="line-height:1.7;">{{ product.description|linebreaks }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if related %}
+        <div class="mt-5 pt-5 border-top animate-on-scroll">
+            <h4 class="mb-4" style="color:var(--color-secondary);">Другие товары</h4>
+            <div class="row g-4">
+                {% for item in related %}
+                <div class="col-6 col-md-3">
+                    <a href="{{ item.get_absolute_url }}" class="text-decoration-none">
+                        <div class="card h-100">
+                            {% if item.photo %}
+                            <img src="{{ item.photo.url }}" class="card-img-top" loading="lazy"
+                                 style="height:160px;object-fit:cover;" alt="{{ item.name }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <p class="card-text small fw-medium mb-1" style="color:var(--color-secondary);">{{ item.name }}</p>
+                                <strong class="text-accent">{{ item.price }} ₽</strong>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,13 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-    .bg-orange {
-        background-color: #fd7e14 !important;
-        color: white;
-    }
-</style>
 <div class="container py-4">
-    <a href="/specialist/my/" class="btn btn-outline-secondary btn-sm mb-4">← Назад</a>
+    <a href="{% url 'specialists:my_schedule' %}" class="btn btn-outline-secondary btn-sm mb-4">← Назад</a>
 
     <div class="row g-4">
         <div class="col-md-6">
@@ -34,7 +28,7 @@
                             {% elif appointment.status == 'confirmed' %}bg-success
                             {% elif appointment.status == 'in_progress' %}bg-primary
                             {% elif appointment.status == 'completed' %}bg-secondary
-                            {% elif appointment.status == 'no_show' %}bg-warning text-dark
+                            {% elif appointment.status == 'no_show' %}bg-orange
                             {% elif appointment.status == 'cancelled' %}bg-danger
                             {% endif %}">
                             {{ appointment.get_status_display }}
@@ -58,7 +52,7 @@
                 </div>
                 <div class="card-body">
                     <form method="post"
-                          action="/specialist/my/appointment/{{ appointment.pk }}/change-status/">
+                          action="{% url 'specialists:change_status' appointment.pk %}">
                         {% csrf_token %}
                         <div class="d-flex gap-2 flex-wrap">
                             {% if appointment.status == 'confirmed' %}
@@ -147,7 +141,7 @@ document.getElementById('upload-btn').addEventListener('click', function() {
     formData.append('photo', photo);
     formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
-    fetch('/specialist/my/appointment/{{ appointment.pk }}/upload-photo/', {
+    fetch('{% url 'specialists:upload_photo' appointment.pk %}', {
         method: 'POST',
         body: formData,
     })

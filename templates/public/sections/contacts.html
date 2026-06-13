@@ -1,0 +1,78 @@
+{% with contacts_side=section.settings.contacts_side|default:"left" form_side=section.settings.form_side|default:"right" %}
+<section class="public-section {{ section_bg_class }}"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
+    <div class="container">
+        {% if section.settings.title or section.settings.subtitle %}
+        <div class="section-header section-header--center animate-on-scroll">
+            {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+            {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="row g-5">
+            {# Контакты #}
+            {% if contacts_side != 'none' %}
+            <div class="col-md-6 animate-on-scroll {% if contacts_side == 'right' %}order-md-2{% endif %}">
+                <h4 class="mb-4" style="color:var(--color-secondary);">Контакты</h4>
+
+                {% if section.settings.phone %}
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <a href="tel:{{ section.settings.phone }}">{{ section.settings.phone }}</a>
+                </div>
+                {% endif %}
+
+                {% if section.settings.email %}
+                <div class="contact-item">
+                    <div class="contact-icon">✉️</div>
+                    <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a>
+                </div>
+                {% endif %}
+
+                {% if section.settings.vk %}
+                <div class="contact-item">
+                    <div class="contact-icon">VK</div>
+                    <a href="{{ section.settings.vk }}" target="_blank">ВКонтакте</a>
+                </div>
+                {% endif %}
+
+                {% if section.settings.telegram %}
+                <div class="contact-item">
+                    <div class="contact-icon">TG</div>
+                    <a href="https://t.me/{{ section.settings.telegram|cut:'@' }}" target="_blank">Telegram</a>
+                </div>
+                {% endif %}
+
+                {% if section.settings.whatsapp %}
+                <div class="contact-item">
+                    <div class="contact-icon">WA</div>
+                    <a href="https://wa.me/{{ section.settings.whatsapp|cut:' '|cut:'+'|cut:'-'|cut:'('|cut:')' }}" target="_blank">WhatsApp</a>
+                </div>
+                {% endif %}
+
+                {% if section.settings.instagram %}
+                <div class="contact-item">
+                    <div class="contact-icon">IG</div>
+                    <a href="{{ section.settings.instagram }}" target="_blank">Instagram</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# Форма записи #}
+            {% if form_side != 'none' %}
+            <div class="col-md-6 animate-on-scroll animate-right {% if form_side == 'left' %}order-md-first{% endif %}">
+                <h4 class="mb-4" style="color:var(--color-secondary);">Онлайн-запись</h4>
+                <div class="card p-4">
+                    <p class="text-muted mb-4">Выберите специалиста, услугу и удобное время.</p>
+                    <button class="btn btn-accent btn-lg w-100"
+                            data-bs-toggle="modal" data-bs-target="#bookingModal">
+                        Записаться онлайн
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endwith %}

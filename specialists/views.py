@@ -50,7 +50,6 @@ def appointment_detail(request, pk):
         specialist=specialist,
     )
 
-    # Загрузка фото доступна только если визит завершён
     is_completed = appointment.status == Appointment.STATUS_COMPLETED
     has_consent = False
     if is_completed:
@@ -70,6 +69,7 @@ def appointment_detail(request, pk):
     }
     return render(request, 'specialists/appointment_detail.html', context)
 
+
 @login_required
 def upload_photo(request, pk):
     try:
@@ -79,8 +79,19 @@ def upload_photo(request, pk):
 
     appointment = get_object_or_404(Appointment, pk=pk, specialist=specialist)
 
+    # Загрузка фото доступна только для завершённого визита
+    if appointment.status != Appointment.STATUS_COMPLETED:
+        return JsonResponse(
+            {'success': False, 'error': 'Фото можно загрузить только для завершённого визита'},
+            status=403,
+        )
+
+    # Загрузка фото возможна только при наличии согласия клиента
     if not PhotoConsent.objects.filter(appointment=appointment).exists():
-        return JsonResponse({'success': False, 'error': 'Нет согласия клиента на публикацию фото'}, status=403)
+        return JsonResponse(
+            {'success': False, 'error': 'Нет согласия клиента на публикацию фото'},
+            status=403,
+        )
 
     if request.method == 'POST':
         photo = request.FILES.get('photo')
@@ -167,7 +178,6 @@ def upload_direct(request):
             'success': True,
         })
 
-    from services.models import ServiceCategory
     return render(request, 'specialists/upload_direct.html', {
         'categories': ServiceCategory.objects.all(),
     })

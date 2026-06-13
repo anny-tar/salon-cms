@@ -54,8 +54,6 @@ function buildForm(jQ, type, container, currentSettings) {
     }
 
     let html = '<div style="background:#f0f4f8;padding:14px;border-radius:6px;margin-top:8px;border:1px solid #d0d7de;">';
-    html += '<p style="font-weight:600;margin-bottom:12px;color:#24292f;font-size:13px;">⚙ Настройки секции</p>';
-
     for (const [key, field] of Object.entries(fields)) {
         const val = currentSettings[key] !== undefined ? currentSettings[key] : '';
         html += '<div style="margin-bottom:10px;">';
@@ -170,3 +168,56 @@ var waitForJQuery = setInterval(function() {
         });
     }
 }, 50);
+
+
+/* ── Дополнения: скрытие поля order, нумерация секций с 1 ── */
+
+(function() {
+
+    var waitForJQ = setInterval(function() {
+        if (typeof django === 'undefined' || typeof django.jQuery === 'undefined') return;
+        clearInterval(waitForJQ);
+        var jQ = django.jQuery;
+
+        jQ(document).ready(function() {
+
+            // 1. Скрываем поле order если оно где-то всё равно рендерится
+            function hideOrderFields() {
+                jQ('.field-order').hide();
+                jQ('input[name$="-order"]').closest('.form-row, p, div.field-order').hide();
+            }
+            hideOrderFields();
+
+            // 2. Обновляем заголовки секций: "(позиция N)" → "(N)"
+            //    и нумеруем с 1, а не с 0
+            function updateSectionTitles() {
+                jQ('.inline-related').not('.empty-form').each(function(idx) {
+                    var row = jQ(this);
+                    // Ищем заголовок inline-строки
+                    var header = row.find('h3');
+                    if (!header.length) return;
+
+                    var text = header.text();
+                    // Заменяем "(позиция N)" или "(N)" на правильный номер
+                    text = text.replace(/\(позиция\s*\d+\)/gi, '(' + (idx + 1) + ')');
+                    text = text.replace(/\(\d+\)/g, '(' + (idx + 1) + ')');
+                    header.text(text);
+                });
+            }
+            // Запускаем с задержкой — inline рендерится не сразу
+            setTimeout(updateSectionTitles, 400);
+            setTimeout(updateSectionTitles, 1000);
+
+            // Обновляем при добавлении/удалении/перемещении
+            jQ(document).on('formset:added formset:removed', function() {
+                setTimeout(updateSectionTitles, 300);
+            });
+            // Кнопки вверх/вниз — после клика перезагрузка, но на случай AJAX:
+            jQ(document).on('click', '.move-up-handler, .move-down-handler, [data-move]', function() {
+                setTimeout(updateSectionTitles, 500);
+            });
+
+        });
+    }, 50);
+
+})();

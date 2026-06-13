@@ -1,30 +1,41 @@
 {% extends 'base.html' %}
+
+{% block title %}Команда — {{ site_settings.salon_name }}{% endblock %}
+
 {% block content %}
-<section class="py-5">
+<section class="public-section public-section--light">
     <div class="container">
-        <h2 class="mb-4">Наша команда</h2>
+        <div class="section-header section-header--center animate-on-scroll">
+            <h2>Наша команда</h2>
+        </div>
         <div class="row g-4">
             {% for specialist in specialists %}
-            <div class="col-md-3">
-                <a href="/specialist/{{ specialist.pk }}/" class="text-decoration-none text-dark">
-                    <div class="card h-100 shadow-sm text-center">
+            <div class="col-6 col-md-3 animate-on-scroll animate-delay-{{ forloop.counter }}">
+                <a href="{% url 'public:specialist_detail' specialist.slug %}"
+                   class="text-decoration-none">
+                    <div class="card h-100 text-center">
                         {% if specialist.photo %}
-                        <img src="{{ specialist.photo.url }}" class="card-img-top"
-                             style="height:220px;object-fit:cover;">
+                        <img src="{{ specialist.photo.url }}" class="card-img-top" loading="lazy"
+                             style="height:240px;object-fit:cover;" alt="{{ specialist.full_name }}">
                         {% else %}
-                        <div style="height:220px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
-                            <span style="font-size:64px;color:#ccc;">👤</span>
+                        <div style="height:240px;display:flex;align-items:center;
+                                    justify-content:center;background:var(--color-bg-alt);">
+                            <span style="font-size:64px;">👤</span>
                         </div>
                         {% endif %}
                         <div class="card-body">
-                            <h6 class="card-title mb-1">{{ specialist.full_name }}</h6>
+                            <h6 class="card-title mb-1" style="color:var(--color-secondary);">
+                                {{ specialist.full_name }}
+                            </h6>
                             <p class="text-muted small mb-0">{{ specialist.specialization }}</p>
                         </div>
                     </div>
                 </a>
             </div>
             {% empty %}
-            <p class="text-muted">Специалисты скоро появятся</p>
+            <div class="col-12 text-center text-muted py-5">
+                <p>Специалисты скоро появятся</p>
+            </div>
             {% endfor %}
         </div>
     </div>

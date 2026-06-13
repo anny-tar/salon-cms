@@ -1,9 +1,33 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ site_settings.salon_name }}{% endblock %}</title>
+
+    {# SEO мета-теги #}
+    {% block meta_description %}
+    {% if site_settings.meta_description %}
+    <meta name="description" content="{{ site_settings.meta_description }}">
+    {% endif %}
+    {% endblock %}
+
+    {% block meta_robots %}
+    <meta name="robots" content="{{ site_settings.robots|default:'index, follow' }}">
+    {% endblock %}
+
+    <meta property="og:site_name" content="{{ site_settings.salon_name }}">
+    <meta property="og:type" content="website">
+    {% block og_title %}<meta property="og:title" content="{% block title_og %}{{ site_settings.salon_name }}{% endblock %}">{% endblock %}
+    {% block og_description %}
+    {% if site_settings.meta_description %}
+    <meta property="og:description" content="{{ site_settings.meta_description }}">
+    {% endif %}
+    {% endblock %}
+    {% if site_settings.logo %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_settings.logo.url }}">
+    {% endif %}
 
     {% if site_settings.favicon %}
     <link rel="icon" href="{{ site_settings.favicon.url }}">
@@ -12,63 +36,27 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     {% if site_settings.font %}
-    <link href="https://fonts.googleapis.com/css2?family={{ site_settings.font|urlencode }}:wght@400;500;700&display=swap" rel="stylesheet">
+    {% if google_font_url %}<link href="{{ google_font_url }}" rel="stylesheet">{% endif %}
     {% endif %}
 
     <style>
         :root {
-            --color-primary: {{ site_settings.color_primary|default:"#4F81BD" }};
-            --color-secondary: {{ site_settings.color_secondary|default:"#2E4057" }};
-            --color-accent: {{ site_settings.color_accent|default:"#F6AE2D" }};
+            --color-primary:    {{ site_settings.color_primary|default:"#4F81BD" }};
+            --color-secondary:  {{ site_settings.color_secondary|default:"#2E4057" }};
+            --color-accent:     {{ site_settings.color_accent|default:"#F6AE2D" }};
             --color-background: {{ site_settings.color_background|default:"#FFFFFF" }};
             --font-main: '{{ site_settings.font|default:"Roboto" }}', sans-serif;
         }
-
-        * { box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-main);
-            background-color: var(--color-background);
-            margin: 0;
-        }
-
-        .navbar-salon {
-            background-color: var(--color-primary);
-        }
-
-        .btn-accent {
-            background-color: var(--color-accent);
-            border-color: var(--color-accent);
-            color: #fff;
-        }
-
-        .btn-accent:hover {
-            opacity: 0.9;
-            color: #fff;
-        }
-
-        footer {
-            background-color: var(--color-secondary);
-            color: #fff;
-        }
-
-        footer a {
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            color: #fff;
-        }
     </style>
+    <link rel="stylesheet" href="{% static 'css/public.css' %}">
 
     {% block extra_css %}{% endblock %}
 </head>
-<body style="display:flex; flex-direction:column; min-height:100vh;">
+<body>
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-salon">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-salon sticky-top">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'public:index' %}">
             {% if site_settings.logo %}
             <img src="{{ site_settings.logo.url }}" height="40" alt="{{ site_settings.salon_name }}">
             {% endif %}
@@ -89,7 +77,9 @@
                 </li>
                 {% endfor %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#booking">Записаться</a>
+                    <a class="nav-link" href="#"
+                       data-bs-toggle="modal" data-bs-target="#bookingModal"
+                       onclick="return false;">Записаться</a>
                 </li>
             </ul>
         </div>
@@ -119,12 +109,9 @@
                 </div>
             </div>
             <div class="col-md-3 text-md-end">
-                {% if site_settings.phone %}
-                <p class="mb-1">{{ site_settings.phone }}</p>
-                {% endif %}
-                {% if site_settings.email %}
-                <p class="mb-1">{{ site_settings.email }}</p>
-                {% endif %}
+                {% if site_settings.phone %}<p class="mb-1">{{ site_settings.phone }}</p>{% endif %}
+                {% if site_settings.email %}<p class="mb-1">{{ site_settings.email }}</p>{% endif %}
+                {% if site_settings.address %}<p class="mb-1 small">{{ site_settings.address }}</p>{% endif %}
                 {% if site_settings.privacy_policy %}
                 <a href="{{ site_settings.privacy_policy.url }}" target="_blank" class="small">
                     Политика конфиденциальности
@@ -136,6 +123,226 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ── Модальное окно записи ─────────────────────────────────────── -->
+<div class="modal fade" id="bookingModal" tabindex="-1"
+     aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:var(--color-primary);color:#fff;">
+                <h5 class="modal-title" id="bookingModalLabel">Онлайн-запись</h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-booking-success" class="alert alert-success d-none">
+                    Вы успешно записаны! Ожидайте подтверждения.
+                </div>
+                <div id="modal-booking-error" class="alert alert-danger d-none"></div>
+                <div id="modal-booking-form">
+                    <div class="mb-3">
+                        <label class="form-label">Ваше имя</label>
+                        <input type="text" id="mb-name" class="form-control"
+                               placeholder="Имя Фамилия">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Телефон</label>
+                        <input type="text" id="mb-phone" class="form-control"
+                               placeholder="+7 (999) 000-00-00">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Специалист</label>
+                        <select id="mb-specialist" class="form-select">
+                            <option value="">Выберите специалиста</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Услуга</label>
+                        <select id="mb-service" class="form-select">
+                            <option value="">Сначала выберите специалиста</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Дата</label>
+                        <input type="date" id="mb-date" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Время</label>
+                        <select id="mb-time" class="form-select">
+                            <option value="">Сначала выберите специалиста, услугу и дату</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <div class="mb-3">
+                            <label class="form-label">Фото-референс <span class="text-muted small">(необязательно, до 2 фото)</span></label>
+                            <input type="file" id="mb-ref1" class="form-control mb-2" accept="image/*">
+                            <input type="file" id="mb-ref2" class="form-control" accept="image/*">
+                            <div class="form-text">Загрузите фото желаемого результата</div>
+                        </div>
+                        <input type="checkbox" class="form-check-input" id="mb-consent">
+                        <label class="form-check-label" for="mb-consent">
+                            Согласен на обработку персональных данных
+                            {% if site_settings.privacy_policy %}
+                            (<a href="{{ site_settings.privacy_policy.url }}"
+                                target="_blank">политика</a>)
+                            {% endif %}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Отмена</button>
+                <button type="button" id="mb-submit" class="btn btn-accent" disabled>
+                    Записаться
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const csrf = '{{ csrf_token }}';
+
+    // Загружаем специалистов при открытии модала
+    const modal = document.getElementById('bookingModal');
+    if (!modal) return;
+
+    modal.addEventListener('show.bs.modal', function () {
+        const sel = document.getElementById('mb-specialist');
+        if (sel && sel.options.length <= 1) {
+            fetch('/ajax/services-for-specialist/?specialist=')
+                .catch(() => {});
+            // Загружаем список специалистов
+            fetch('/specialist-list-json/')
+                .then(r => r.json())
+                .then(data => {
+                    sel.innerHTML = '<option value="">Выберите специалиста</option>';
+                    (data.specialists || []).forEach(sp => {
+                        const o = document.createElement('option');
+                        o.value = sp.id; o.textContent = sp.full_name;
+                        sel.appendChild(o);
+                    });
+                })
+                .catch(() => {});
+        }
+        // Сбрасываем форму
+        document.getElementById('modal-booking-success').classList.add('d-none');
+        document.getElementById('modal-booking-error').classList.add('d-none');
+        document.getElementById('modal-booking-form').classList.remove('d-none');
+        document.getElementById('mb-submit').disabled = true;
+    });
+
+    function mbLoadServices(specialistId) {
+        const sel = document.getElementById('mb-service');
+        sel.innerHTML = '<option value="">Загрузка...</option>';
+        if (!specialistId) {
+            sel.innerHTML = '<option value="">Сначала выберите специалиста</option>';
+            return;
+        }
+        fetch('/ajax/services-for-specialist/?specialist=' + specialistId)
+            .then(r => r.json())
+            .then(data => {
+                sel.innerHTML = '<option value="">Выберите услугу</option>';
+                (data.services || []).forEach(s => {
+                    const o = document.createElement('option');
+                    o.value = s.id; o.textContent = s.name;
+                    sel.appendChild(o);
+                });
+                mbLoadSlots();
+            });
+    }
+
+    function mbLoadSlots() {
+        const specialist = document.getElementById('mb-specialist')?.value;
+        const service    = document.getElementById('mb-service')?.value;
+        const date       = document.getElementById('mb-date')?.value;
+        const timeSel    = document.getElementById('mb-time');
+        if (!specialist || !service || !date) {
+            timeSel.innerHTML = '<option value="">Сначала заполните поля выше</option>';
+            mbUpdateSubmit(); return;
+        }
+        fetch('/ajax/slots/?specialist=' + specialist + '&service=' + service + '&date=' + date)
+            .then(r => r.json())
+            .then(data => {
+                timeSel.innerHTML = '';
+                if (data.day_off) {
+                    timeSel.innerHTML = '<option value="">Специалист не работает в этот день</option>';
+                } else if (!data.slots?.length) {
+                    timeSel.innerHTML = '<option value="">Нет доступных слотов</option>';
+                } else {
+                    timeSel.innerHTML = '<option value="">Выберите время</option>';
+                    data.slots.forEach(s => {
+                        const o = document.createElement('option');
+                        o.value = s; o.textContent = s;
+                        timeSel.appendChild(o);
+                    });
+                }
+                mbUpdateSubmit();
+            });
+    }
+
+    function mbUpdateSubmit() {
+        const ok = document.getElementById('mb-consent')?.checked
+                && !!document.getElementById('mb-time')?.value;
+        document.getElementById('mb-submit').disabled = !ok;
+    }
+
+    document.getElementById('mb-specialist')?.addEventListener('change', e => mbLoadServices(e.target.value));
+    document.getElementById('mb-service')?.addEventListener('change', mbLoadSlots);
+    document.getElementById('mb-date')?.addEventListener('change', mbLoadSlots);
+    document.getElementById('mb-consent')?.addEventListener('change', mbUpdateSubmit);
+
+    document.getElementById('mb-submit')?.addEventListener('click', function() {
+        const fd = new FormData();
+        fd.append('full_name',  document.getElementById('mb-name').value);
+        fd.append('phone',      document.getElementById('mb-phone').value);
+        fd.append('specialist', document.getElementById('mb-specialist').value);
+        fd.append('service',    document.getElementById('mb-service').value);
+        fd.append('date',       document.getElementById('mb-date').value);
+        fd.append('time_start', document.getElementById('mb-time').value);
+        fd.append('pd_consent', 'true');
+        fd.append('csrfmiddlewaretoken', csrf);
+        const ref1 = document.getElementById('mb-ref1')?.files[0];
+        const ref2 = document.getElementById('mb-ref2')?.files[0];
+        if (ref1) fd.append('reference_photo',   ref1);
+        if (ref2) fd.append('reference_photo_2', ref2);
+
+        fetch('/ajax/book/', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    document.getElementById('modal-booking-form').classList.add('d-none');
+                    document.getElementById('modal-booking-success').classList.remove('d-none');
+                } else {
+                    const e = document.getElementById('modal-booking-error');
+                    e.textContent = res.error;
+                    e.classList.remove('d-none');
+                }
+            });
+    });
+})();
+</script>
+
 {% block extra_js %}{% endblock %}
+
+<script>
+// Intersection Observer для анимаций
+(function() {
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(function(el) {
+        observer.observe(el);
+    });
+})();
+</script>
+
 </body>
 </html>

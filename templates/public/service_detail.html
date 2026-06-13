@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.get_seo_title|default:service.name }} — {{ site_settings.salon_name }}{% endblock %}
+
+{% block content %}
+<section class="public-section public-section--light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'public:index' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'public:services' %}">Услуги</a></li>
+                <li class="breadcrumb-item active">{{ service.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5 align-items-start">
+            <div class="col-md-8 animate-on-scroll">
+                <h1 style="color:var(--color-secondary);">{{ service.get_h1|default:service.name }}</h1>
+                {% if service.category %}
+                <span class="badge badge-accent mb-3">{{ service.category.name }}</span>
+                {% endif %}
+                {% if service.description %}
+                <div class="text-muted mt-3" style="font-size:1.05rem;line-height:1.7;">
+                    {{ service.description|linebreaks }}
+                </div>
+                {% endif %}
+
+                {% if specialists %}
+                <div class="mt-5">
+                    <h4 style="color:var(--color-secondary);">Специалисты</h4>
+                    <div class="row g-3 mt-2">
+                        {% for sp in specialists %}
+                        <div class="col-6 col-md-4">
+                            <a href="{{ sp.get_absolute_url }}" class="text-decoration-none">
+                                <div class="card text-center p-3">
+                                    {% if sp.photo %}
+                                    <img src="{{ sp.photo.url }}" class="rounded-circle mx-auto mb-2" loading="lazy"
+                                         style="width:70px;height:70px;object-fit:cover;" alt="{{ sp.full_name }}">
+                                    {% endif %}
+                                    <div class="fw-medium" style="color:var(--color-secondary);">{{ sp.full_name }}</div>
+                                    <small class="text-muted">{{ sp.specialization }}</small>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-4 animate-on-scroll animate-right">
+                <div class="card p-4" style="position:sticky;top:90px;">
+                    <h5 class="mb-4" style="color:var(--color-secondary);">О услуге</h5>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Цена</span>
+                        <strong class="text-accent">{{ service.price }} ₽</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="text-muted">Длительность</span>
+                        <strong>{{ service.duration }} мин.</strong>
+                    </div>
+                    <button class="btn btn-accent w-100"
+                            data-bs-toggle="modal" data-bs-target="#bookingModal">
+                        Записаться
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

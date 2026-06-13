@@ -1,0 +1,36 @@
+<section class="public-section {{ section_bg_class }}"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
+    <div class="container">
+        {% if section.settings.title or section.settings.subtitle %}
+        <div class="section-header section-header--center animate-on-scroll">
+            {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+            {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+            {% if section.settings.description %}<p class="section-description">{{ section.settings.description }}</p>{% endif %}
+        </div>
+        {% endif %}
+
+        {% with count=section.settings.count|default:"6" ribbon=section.settings.display %}
+        <div class="row g-3">
+            {% for work in live_data.portfolio|slice:count %}
+            <div class="{% if ribbon == 'ribbon' %}col-6 col-md-2{% else %}col-6 col-md-4{% endif %} animate-on-scroll animate-scale">
+                <div class="portfolio-item">
+                    {% if work.photo_watermarked %}
+                    <img src="{{ work.photo_watermarked.url }}" loading="lazy"
+                         style="height:{% if ribbon == 'ribbon' %}130px{% else %}220px{% endif %};"
+                         alt="{{ work.specialist.full_name }}">
+                    {% elif work.photo_original %}
+                    <img src="{{ work.photo_original.url }}" loading="lazy"
+                         style="height:{% if ribbon == 'ribbon' %}130px{% else %}220px{% endif %};"
+                         alt="{{ work.specialist.full_name }}">
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}<p class="text-muted text-center">Работы скоро появятся</p>{% endfor %}
+        </div>
+        {% endwith %}
+
+        <div class="text-center mt-5 animate-on-scroll">
+            <a href="{% url 'public:portfolio' %}" class="btn btn-outline-accent px-5">Все работы →</a>
+        </div>
+    </div>
+</section>

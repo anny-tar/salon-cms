@@ -1,0 +1,283 @@
+/* ═══════════════════════════════════════════════════════════════════
+   public.css — статические стили публичного сайта
+   CSS-переменные --color-* задаются в base.html из БД
+   ═══════════════════════════════════════════════════════════════════ */
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--color-background);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main { flex: 1; }
+
+/* ── Вспомогательные цвета ───────────────────────────────────────── */
+
+:root {
+    --color-bg-alt: color-mix(in srgb, var(--color-background) 94%, var(--color-secondary) 6%);
+    --section-padding: 80px 0;
+    --transition-base: 0.3s ease;
+}
+
+/* ── Навигация ───────────────────────────────────────────────────── */
+
+.navbar-salon { background-color: var(--color-primary); }
+
+.navbar-salon .navbar-brand { font-weight: 700; letter-spacing: 0.3px; }
+
+.navbar-salon .nav-link {
+    opacity: 0.85;
+    transition: opacity var(--transition-base);
+}
+.navbar-salon .nav-link:hover { opacity: 1; }
+
+/* ── Кнопки ─────────────────────────────────────────────────────── */
+
+.btn-accent {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+    transition: opacity var(--transition-base), transform var(--transition-base);
+}
+.btn-accent:hover, .btn-accent:focus {
+    opacity: 0.9;
+    color: #fff;
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+/* ── Секции ──────────────────────────────────────────────────────── */
+
+.public-section {
+    padding: var(--section-padding);
+    scroll-margin-top: 70px;
+}
+
+/* Чередование фона */
+.public-section--light { background-color: var(--color-background); }
+.public-section--alt   { background-color: var(--color-bg-alt); }
+
+/* Заголовок секции */
+.section-header { margin-bottom: 48px; }
+.section-header h2 {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin-bottom: 12px;
+}
+.section-header .section-subtitle {
+    font-size: 1.05rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+.section-header .section-description {
+    color: #777;
+    max-width: 680px;
+}
+.section-header--center { text-align: center; }
+.section-header--center .section-description { margin: 0 auto; }
+.section-header--left   { text-align: left; }
+.section-header--right  { text-align: right; }
+
+/* ── Карточки ────────────────────────────────────────────────────── */
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    transition: box-shadow var(--transition-base), transform var(--transition-base);
+    overflow: hidden;
+}
+.card:hover {
+    box-shadow: 0 6px 32px rgba(0,0,0,0.13);
+    transform: translateY(-3px);
+}
+.card-img-top { object-fit: cover; }
+
+/* ── Баннер ──────────────────────────────────────────────────────── */
+
+.banner-section {
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+}
+.banner-overlay {
+    position: absolute;
+    inset: 0;
+}
+.banner-overlay--dark  { background: rgba(0,0,0,0.5); }
+.banner-overlay--light { background: rgba(255,255,255,0.35); }
+.banner-overlay--none  { display: none; }
+
+.banner-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 80px 0;
+}
+.banner-content--light-overlay { color: var(--color-secondary); }
+
+.banner-content h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    margin-bottom: 16px;
+    line-height: 1.15;
+}
+.banner-content p {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    margin-bottom: 32px;
+    opacity: 0.9;
+}
+
+/* ── Портфолио ───────────────────────────────────────────────────── */
+
+.portfolio-item {
+    overflow: hidden;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.portfolio-item img {
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    display: block;
+}
+.portfolio-item:hover img { transform: scale(1.05); }
+
+/* ── Шаги ────────────────────────────────────────────────────────── */
+
+.step-card {
+    text-align: center;
+    padding: 32px 20px;
+    background: var(--color-background);
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    transition: box-shadow var(--transition-base);
+}
+.step-card:hover { box-shadow: 0 6px 32px rgba(0,0,0,0.13); }
+.step-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    line-height: 1;
+    margin-bottom: 16px;
+}
+.step-text { color: #555; font-size: 0.95rem; }
+
+/* ── Контакты ────────────────────────────────────────────────────── */
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 1rem;
+}
+.contact-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+.contact-item a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: color var(--transition-base);
+}
+.contact-item a:hover { color: var(--color-accent); }
+
+/* ── Карта ───────────────────────────────────────────────────────── */
+
+.map-iframe {
+    width: 100%;
+    height: 420px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+}
+
+/* ── Список-группа ───────────────────────────────────────────────── */
+
+.list-group-item {
+    border-color: rgba(0,0,0,0.07);
+    padding: 14px 18px;
+    transition: background var(--transition-base);
+}
+.list-group-item:hover { background: var(--color-bg-alt); }
+
+/* ── Badge ───────────────────────────────────────────────────────── */
+
+.badge-accent {
+    background-color: var(--color-accent);
+    color: #fff;
+}
+
+/* ── Утилиты ─────────────────────────────────────────────────────── */
+
+.bg-orange { background-color: #fd7e14 !important; color: white; }
+.text-accent { color: var(--color-accent); }
+.btn-outline-accent {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+.btn-outline-accent:hover {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+/* ── Футер ───────────────────────────────────────────────────────── */
+
+footer { background-color: var(--color-secondary); color: #fff; }
+footer a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color var(--transition-base); }
+footer a:hover { color: #fff; }
+
+/* ── Модал записи ────────────────────────────────────────────────── */
+
+#bookingModal .modal-header {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+#bookingModal .modal-header .btn-close { filter: invert(1); }
+
+/* ══════════════════════════════════════════════════════════════════
+   АНИМАЦИИ — Intersection Observer
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Элементы скрыты до появления в viewport */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.animate-on-scroll.animate-left  { transform: translateX(-32px); }
+.animate-on-scroll.animate-right { transform: translateX(32px); }
+.animate-on-scroll.animate-scale { transform: scale(0.93); }
+
+/* Класс добавляется через JS когда элемент попадает в viewport */
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* Задержки для cascade-эффекта */
+.animate-delay-1 { transition-delay: 0.1s; }
+.animate-delay-2 { transition-delay: 0.2s; }
+.animate-delay-3 { transition-delay: 0.3s; }
+.animate-delay-4 { transition-delay: 0.4s; }
+.animate-delay-5 { transition-delay: 0.5s; }

@@ -83,6 +83,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sitesettings',
             name='watermark_opacity',
-            field=models.FloatField(default=0.3, verbose_name='Прозрачность (0.1 — 1.0)'),
+            field=models.FloatField(default=0.3, verbose_name='Прозрачность (0.1 - 1.0)'),
         ),
     ]

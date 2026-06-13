@@ -1,39 +1,59 @@
 {% extends 'base.html' %}
-{% block content %}
-<section class="py-5">
-    <div class="container">
-        <h2 class="mb-4">Новости и акции</h2>
+{% load static %}
+{% block title %}Новости и акции — {{ site_settings.salon_name }}{% endblock %}
 
-        <div class="d-flex gap-2 mb-4">
-            <a href="/news/" class="btn btn-sm {% if not post_type %}btn-accent{% else %}btn-outline-secondary{% endif %}">Все</a>
-            <a href="/news/?type=news" class="btn btn-sm {% if post_type == 'news' %}btn-accent{% else %}btn-outline-secondary{% endif %}">Новости</a>
-            <a href="/news/?type=promo" class="btn btn-sm {% if post_type == 'promo' %}btn-accent{% else %}btn-outline-secondary{% endif %}">Акции</a>
+{% block content %}
+<section class="public-section public-section--light">
+    <div class="container">
+        <div class="section-header section-header--center animate-on-scroll">
+            <h1>Новости и акции</h1>
         </div>
 
-        <div class="row g-3">
-            {% for post in posts %}
+        {# Строка фильтров #}
+        <div class="row g-3 mb-5 animate-on-scroll">
+            <div class="col-md-6">
+                <input type="text" id="filter-search" class="form-control form-control-lg"
+                       placeholder="Поиск по заголовку...">
+            </div>
             <div class="col-md-4">
-                <div class="card h-100 shadow-sm">
-                    {% if post.photo %}
-                    <img src="{{ post.photo.url }}" class="card-img-top"
-                         style="height:180px;object-fit:cover;">
-                    {% endif %}
-                    <div class="card-body">
-                        <span class="badge mb-2" style="background:var(--color-accent);color:#fff;">
-                            {{ post.get_post_type_display }}
-                        </span>
-                        <h6 class="card-title">{{ post.title }}</h6>
-                        <p class="card-text text-muted">{{ post.body }}</p>
+                <select id="filter-type" class="form-select form-select-lg">
+                    <option value="">Все публикации</option>
+                    <option value="news">Новости</option>
+                    <option value="promo">Акции</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for post in posts %}
+            <div class="col-md-4 animate-on-scroll"
+                 data-filter-item
+                 data-name="{{ post.title|lower }}"
+                 data-type="{{ post.post_type }}">
+                <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
+                    <div class="card h-100">
+                        {% if post.photo %}
+                        <img src="{{ post.photo.url }}" class="card-img-top" loading="lazy"
+                             style="height:200px;object-fit:cover;" alt="{{ post.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <span class="badge badge-accent mb-2">{{ post.get_post_type_display }}</span>
+                            <h5 class="card-title" style="color:var(--color-secondary);">{{ post.title }}</h5>
+                            <p class="card-text text-muted small">{{ post.body|truncatewords:20 }}</p>
+                            <small class="text-muted">{{ post.created_at|date:"d.m.Y" }}</small>
+                        </div>
                     </div>
-                    <div class="card-footer text-muted small bg-transparent">
-                        {{ post.created_at|date:"d.m.Y" }}
-                    </div>
-                </div>
+                </a>
             </div>
             {% empty %}
-            <p class="text-muted">Новостей пока нет</p>
+            <div class="col-12 text-center text-muted py-5">Новостей пока нет</div>
             {% endfor %}
         </div>
+        <p id="no-results" class="text-center text-muted py-4 d-none">Ничего не найдено</p>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/filter.js' %}"></script>
 {% endblock %}

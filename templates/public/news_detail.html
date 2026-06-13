@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.get_seo_title|default:post.title }} — {{ site_settings.salon_name }}{% endblock %}
+
+{% block content %}
+<section class="public-section public-section--light">
+    <div class="container" style="max-width:800px;">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'public:index' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'public:news' %}">Новости</a></li>
+                <li class="breadcrumb-item active">{{ post.title }}</li>
+            </ol>
+        </nav>
+
+        <article class="animate-on-scroll">
+            <div class="mb-3">
+                <span class="badge badge-accent">{{ post.get_post_type_display }}</span>
+                <span class="text-muted small ms-2">{{ post.created_at|date:"d.m.Y" }}</span>
+            </div>
+            <h1 style="color:var(--color-secondary);">{{ post.get_h1|default:post.title }}</h1>
+
+            {% if post.photo %}
+            <img src="{{ post.photo.url }}" class="img-fluid rounded shadow mb-4 w-100" loading="lazy"
+                 style="max-height:420px;object-fit:cover;"
+                 alt="{{ post.alt_text|default:post.title }}">
+            {% endif %}
+
+            <div class="text-muted" style="font-size:1.05rem;line-height:1.8;">
+                {{ post.body|linebreaks }}
+            </div>
+        </article>
+
+        {% if related %}
+        <div class="mt-5 pt-4 border-top animate-on-scroll">
+            <h5 class="mb-4" style="color:var(--color-secondary);">Читайте также</h5>
+            <div class="row g-3">
+                {% for item in related %}
+                <div class="col-md-4">
+                    <a href="{{ item.get_absolute_url }}" class="text-decoration-none">
+                        <div class="card h-100">
+                            {% if item.photo %}
+                            <img src="{{ item.photo.url }}" class="card-img-top" loading="lazy"
+                                 style="height:140px;object-fit:cover;" alt="{{ item.title }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <p class="card-text small fw-medium" style="color:var(--color-secondary);">{{ item.title }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

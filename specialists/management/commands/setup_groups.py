@@ -20,33 +20,33 @@ class Command(BaseCommand):
 
         # --- Специалист ---
         specialist_group = Group.objects.create(name='Специалист')
-        # Специалист не имеет доступа к админке — только к своему интерфейсу
+        # Специалист не имеет доступа к админке - только к своему интерфейсу
 
         # --- Администратор ---
         admin_group = Group.objects.create(name='Администратор')
         admin_permissions = []
 
-        # Клиенты — полный доступ
+        # Клиенты - полный доступ
         ct = ContentType.objects.get_for_model(Client)
         admin_permissions += list(Permission.objects.filter(content_type=ct))
 
-        # Записи — полный доступ
+        # Записи - полный доступ
         ct = ContentType.objects.get_for_model(Appointment)
         admin_permissions += list(Permission.objects.filter(content_type=ct))
 
-        # Специалисты — только просмотр
+        # Специалисты - только просмотр
         ct = ContentType.objects.get_for_model(Specialist)
         admin_permissions += list(Permission.objects.filter(content_type=ct, codename__startswith='view'))
 
-        # Услуги — только просмотр
+        # Услуги - только просмотр
         ct = ContentType.objects.get_for_model(Service)
         admin_permissions += list(Permission.objects.filter(content_type=ct, codename__startswith='view'))
 
-        # Портфолио — загрузка согласий
+        # Портфолио - загрузка согласий
         ct = ContentType.objects.get_for_model(PhotoConsent)
         admin_permissions += list(Permission.objects.filter(content_type=ct))
 
-        # Работы портфолио — только просмотр
+        # Работы портфолио - только просмотр
         ct = ContentType.objects.get_for_model(PortfolioWork)
         admin_permissions += list(Permission.objects.filter(content_type=ct, codename__startswith='view'))
 

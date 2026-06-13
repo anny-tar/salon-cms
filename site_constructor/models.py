@@ -1,4 +1,5 @@
 from django.db import models
+from ordered_model.models import OrderedModel
 
 FONT_CHOICES = [
     ('Roboto', 'Roboto'),
@@ -15,52 +16,42 @@ FONT_CHOICES = [
 
 
 class SiteSettings(models.Model):
-    # Основное
-    salon_name = models.CharField('Название салона', max_length=255, default='Мой салон')
-    logo = models.ImageField('Логотип', upload_to='branding/', null=True, blank=True)
-    favicon = models.ImageField('Фавиконка', upload_to='branding/', null=True, blank=True)
-    phone = models.CharField('Телефон', max_length=20, blank=True)
-    email = models.EmailField('Email', blank=True)
-    address = models.CharField('Адрес', max_length=255, blank=True)
+    salon_name  = models.CharField('Название салона', max_length=255, default='Мой салон')
+    logo        = models.ImageField('Логотип', upload_to='branding/', null=True, blank=True)
+    favicon     = models.ImageField('Фавиконка', upload_to='branding/', null=True, blank=True)
+    phone       = models.CharField('Телефон', max_length=20, blank=True)
+    email       = models.EmailField('Email', blank=True)
+    address     = models.CharField('Адрес', max_length=255, blank=True)
 
-    # Видимость страниц
-    show_services = models.BooleanField('Показывать страницу Услуги', default=True)
-    show_team = models.BooleanField('Показывать страницу Команда', default=True)
-    show_portfolio = models.BooleanField('Показывать страницу Портфолио', default=True)
-    show_news = models.BooleanField('Показывать страницу Новости', default=False)
-    show_products = models.BooleanField('Показывать страницу Товары', default=False)
-
-    # Брендинг
-    color_primary = models.CharField('Основной цвет', max_length=7, default='#4F81BD')
-    color_secondary = models.CharField('Вторичный цвет', max_length=7, default='#2E4057')
-    color_accent = models.CharField('Акцентный цвет', max_length=7, default='#F6AE2D')
+    color_primary    = models.CharField('Основной цвет', max_length=7, default='#4F81BD')
+    color_secondary  = models.CharField('Вторичный цвет', max_length=7, default='#2E4057')
+    color_accent     = models.CharField('Акцентный цвет', max_length=7, default='#F6AE2D')
     color_background = models.CharField('Фон', max_length=7, default='#FFFFFF')
     font = models.CharField('Шрифт', max_length=100, choices=FONT_CHOICES, default='Roboto')
 
-    # Документы
     privacy_policy = models.FileField(
         'Политика конфиденциальности (PDF)',
-        upload_to='documents/',
-        null=True,
-        blank=True,
+        upload_to='documents/', null=True, blank=True,
     )
 
-    # Водяной знак
     WATERMARK_LOGO = 'logo'
     WATERMARK_TEXT = 'text'
     WATERMARK_CHOICES = [
         (WATERMARK_LOGO, 'Логотип'),
         (WATERMARK_TEXT, 'Текст'),
     ]
-    watermark_type = models.CharField(
-        'Тип водяного знака',
-        max_length=10,
-        choices=WATERMARK_CHOICES,
-        default=WATERMARK_TEXT,
-    )
-    watermark_text = models.CharField('Текст водяного знака', max_length=100, blank=True)
+    watermark_type    = models.CharField('Тип водяного знака', max_length=10,
+                                          choices=WATERMARK_CHOICES, default=WATERMARK_TEXT)
+    watermark_text    = models.CharField('Текст водяного знака', max_length=100, blank=True)
     watermark_opacity = models.FloatField('Прозрачность (0.1 — 1.0)', default=0.3)
 
+    # SEO главной страницы
+    seo_title        = models.CharField('SEO заголовок (title)', max_length=255, blank=True)
+    meta_description = models.TextField('Meta description', max_length=300, blank=True)
+    robots           = models.CharField(
+        'Robots', max_length=50, default='index, follow',
+        help_text='Например: index, follow или noindex, nofollow',
+    )
 
     class Meta:
         verbose_name = 'Настройки сайта'
@@ -77,45 +68,117 @@ class SiteSettings(models.Model):
     def get(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
-    
-from django.db import models
-from ordered_model.models import OrderedModel
+
+
+class SitePage(OrderedModel):
+    """
+    Страницы публичного сайта с настройкой порядка, видимости и SEO.
+    Фиксированный набор — 5 страниц, создаётся через data migration.
+    """
+
+    PAGE_SERVICES  = 'services'
+    PAGE_TEAM      = 'team'
+    PAGE_PORTFOLIO = 'portfolio'
+    PAGE_NEWS      = 'news'
+    PAGE_PRODUCTS  = 'products'
+
+    PAGE_CHOICES = [
+        (PAGE_SERVICES,  'Услуги'),
+        (PAGE_TEAM,      'Команда'),
+        (PAGE_PORTFOLIO, 'Портфолио'),
+        (PAGE_NEWS,      'Новости и акции'),
+        (PAGE_PRODUCTS,  'Товары'),
+    ]
+
+    PAGE_DEFAULTS = {
+        PAGE_SERVICES:  {'nav_label': 'Услуги',          'slug': 'services',  'order': 0},
+        PAGE_TEAM:      {'nav_label': 'Команда',         'slug': 'team',      'order': 1},
+        PAGE_PORTFOLIO: {'nav_label': 'Портфолио',       'slug': 'portfolio', 'order': 2},
+        PAGE_NEWS:      {'nav_label': 'Новости и акции', 'slug': 'news',      'order': 3},
+        PAGE_PRODUCTS:  {'nav_label': 'Товары',          'slug': 'products',  'order': 4},
+    }
+
+    page_type        = models.CharField('Тип страницы', max_length=20, choices=PAGE_CHOICES, unique=True)
+    nav_label        = models.CharField('Название в навигации', max_length=100)
+    slug             = models.SlugField('Slug (URL)', max_length=100, unique=True)
+    is_visible       = models.BooleanField('Видна в навигации', default=True)
+    seo_title        = models.CharField('SEO title', max_length=255, blank=True)
+    meta_description = models.TextField('Meta description', max_length=300, blank=True)
+
+    class Meta(OrderedModel.Meta):
+        verbose_name = 'Страница сайта'
+        verbose_name_plural = 'Страницы сайта'
+
+    def __str__(self):
+        return self.nav_label
+
+    def get_url(self):
+        return f'/{self.slug}/'
+
+    @classmethod
+    def ensure_defaults(cls):
+        """Создаёт страницы по умолчанию если их нет."""
+        for page_type, defaults in cls.PAGE_DEFAULTS.items():
+            cls.objects.get_or_create(
+                page_type=page_type,
+                defaults={**defaults, 'is_visible': True},
+            )
 
 
 class Section(OrderedModel):
 
-    TYPE_BANNER = 'banner'
+    TYPE_BANNER   = 'banner'
     TYPE_SERVICES = 'services'
-    TYPE_TEAM = 'team'
-    TYPE_PORTFOLIO = 'portfolio'
-    TYPE_NEWS = 'news'
+    TYPE_TEAM     = 'team'
+    TYPE_PORTFOLIO= 'portfolio'
+    TYPE_NEWS     = 'news'
     TYPE_PRODUCTS = 'products'
-    TYPE_TEXT_IMAGE = 'text_image'
-    TYPE_STEPS = 'steps'
-    TYPE_TABLE = 'table'
-    TYPE_BOOKING = 'booking'
+    TYPE_TEXT_IMG = 'text_image'
+    TYPE_STEPS    = 'steps'
+    TYPE_CONTACTS = 'contacts'
+    TYPE_MAP      = 'map'
 
     TYPE_CHOICES = [
-        (TYPE_BANNER,     'Баннер'),
-        (TYPE_SERVICES,   'Услуги'),
-        (TYPE_TEAM,       'О команде'),
-        (TYPE_PORTFOLIO,  'Портфолио'),
-        (TYPE_NEWS,       'Новости и акции'),
-        (TYPE_PRODUCTS,   'Товары'),
-        (TYPE_TEXT_IMAGE, 'Текст + Изображение'),
-        (TYPE_STEPS,      'Шаги'),
-        (TYPE_TABLE,      'Таблица'),
-        (TYPE_BOOKING,    'Контакты и запись'),
+        (TYPE_BANNER,    'Баннер'),
+        (TYPE_SERVICES,  'Услуги'),
+        (TYPE_TEAM,      'О команде'),
+        (TYPE_PORTFOLIO, 'Портфолио'),
+        (TYPE_NEWS,      'Новости и акции'),
+        (TYPE_PRODUCTS,  'Товары'),
+        (TYPE_TEXT_IMG,  'Текст + Изображение'),
+        (TYPE_STEPS,     'Шаги'),
+        (TYPE_CONTACTS,  'Контакты и форма'),
+        (TYPE_MAP,       'Карта'),
     ]
 
+    TYPE_ICONS = {
+        TYPE_BANNER:    '🖼',
+        TYPE_SERVICES:  '✂️',
+        TYPE_TEAM:      '👥',
+        TYPE_PORTFOLIO: '📸',
+        TYPE_NEWS:      '📰',
+        TYPE_PRODUCTS:  '🛍',
+        TYPE_TEXT_IMG:  '📝',
+        TYPE_STEPS:     '📋',
+        TYPE_CONTACTS:  '📞',
+        TYPE_MAP:       '🗺',
+    }
+
     site = models.ForeignKey(
-        SiteSettings,
-        on_delete=models.CASCADE,
-        related_name='sections',
-        verbose_name='Сайт',
+        SiteSettings, on_delete=models.CASCADE,
+        related_name='sections', verbose_name='Сайт',
     )
-    type = models.CharField('Тип секции', max_length=20, choices=TYPE_CHOICES)
-    settings = models.JSONField('Настройки', default=dict, blank=True)
+    type       = models.CharField('Тип секции', max_length=20, choices=TYPE_CHOICES)
+    settings   = models.JSONField('Настройки', default=dict, blank=True)
+    image      = models.ImageField(
+        'Изображение', upload_to='sections/', null=True, blank=True,
+        help_text='Используется в секциях «Баннер» и «Текст + Изображение»',
+    )
+    is_visible = models.BooleanField('Видна на сайте', default=True)
+    anchor     = models.SlugField(
+        'Якорь (anchor)', max_length=100, blank=True,
+        help_text='Например: services, team, booking. Используется в навигации.',
+    )
 
     order_with_respect_to = 'site'
 
@@ -124,46 +187,29 @@ class Section(OrderedModel):
         verbose_name_plural = 'Секции'
 
     def __str__(self):
-        return f'{self.get_type_display()} (позиция {self.order})'
+        icon = self.TYPE_ICONS.get(self.type, '')
+        return f'{icon} {self.get_type_display()}'
 
-    TYPE_BANNER = 'banner'
-    TYPE_SERVICES = 'services'
-    TYPE_TEAM = 'team'
-    TYPE_PORTFOLIO = 'portfolio'
-    TYPE_NEWS = 'news'
-    TYPE_PRODUCTS = 'products'
-    TYPE_TEXT_IMAGE = 'text_image'
-    TYPE_STEPS = 'steps'
-    TYPE_TABLE = 'table'
-    TYPE_BOOKING = 'booking'
+    @property
+    def icon(self):
+        return self.TYPE_ICONS.get(self.type, '')
 
-    TYPE_CHOICES = [
-        (TYPE_BANNER,     'Баннер'),
-        (TYPE_SERVICES,   'Услуги'),
-        (TYPE_TEAM,       'О команде'),
-        (TYPE_PORTFOLIO,  'Портфолио'),
-        (TYPE_NEWS,       'Новости и акции'),
-        (TYPE_PRODUCTS,   'Товары'),
-        (TYPE_TEXT_IMAGE, 'Текст + Изображение'),
-        (TYPE_STEPS,      'Шаги'),
-        (TYPE_TABLE,      'Таблица'),
-        (TYPE_BOOKING,    'Контакты и запись'),
-    ]
 
-    site = models.ForeignKey(
-        SiteSettings,
-        on_delete=models.CASCADE,
-        related_name='sections',
-        verbose_name='Сайт',
+class SectionStep(models.Model):
+    """Шаг в секции «Шаги». Редактируется через inline в admin."""
+    section = models.ForeignKey(
+        Section, on_delete=models.CASCADE,
+        related_name='steps', verbose_name='Секция',
     )
-    type = models.CharField('Тип секции', max_length=20, choices=TYPE_CHOICES)
-    order = models.PositiveIntegerField('Порядок', default=0)
-    settings = models.JSONField('Настройки', default=dict, blank=True)
+    number  = models.CharField('Номер/символ', max_length=10,
+                               help_text='Например: 01, 1, A, ★')
+    text    = models.TextField('Текст шага')
+    order   = models.PositiveSmallIntegerField('Порядок', default=0)
 
     class Meta:
-        verbose_name = 'Секция'
-        verbose_name_plural = 'Секции'
+        verbose_name = 'Шаг'
+        verbose_name_plural = 'Шаги'
         ordering = ['order']
 
     def __str__(self):
-        return f'{self.get_type_display()} (позиция {self.order})'
+        return f'{self.number}. {self.text[:50]}'

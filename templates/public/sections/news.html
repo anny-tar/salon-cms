@@ -1,0 +1,52 @@
+<section class="public-section {{ section_bg_class }}"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
+    <div class="container">
+        {% if section.settings.title or section.settings.subtitle %}
+        <div class="section-header section-header--center animate-on-scroll">
+            {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+            {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+            {% if section.settings.description %}<p class="section-description">{{ section.settings.description }}</p>{% endif %}
+        </div>
+        {% endif %}
+
+        {% with count=section.settings.count|default:"3" %}
+        {% if section.settings.display == 'list' %}
+        <div class="list-group animate-on-scroll">
+            {% for post in live_data.news|slice:count %}
+            <a href="{{ post.get_absolute_url }}" class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between align-items-start">
+                    <strong>{{ post.title }}</strong>
+                    <span class="badge badge-accent ms-2 flex-shrink-0">{{ post.get_post_type_display }}</span>
+                </div>
+                <p class="text-muted small mb-0 mt-1">{{ post.body|truncatewords:20 }}</p>
+            </a>
+            {% empty %}<p class="text-muted text-center py-3">Новостей пока нет</p>{% endfor %}
+        </div>
+        {% else %}
+        <div class="row g-4">
+            {% for post in live_data.news|slice:count %}
+            <div class="col-md-4 animate-on-scroll animate-delay-{{ forloop.counter }}">
+                <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
+                    <div class="card h-100">
+                        {% if post.photo %}
+                        <img src="{{ post.photo.url }}" class="card-img-top" loading="lazy"
+                             style="height:200px;object-fit:cover;" alt="{{ post.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <span class="badge badge-accent mb-2">{{ post.get_post_type_display }}</span>
+                            <h6 class="card-title" style="color:var(--color-secondary);">{{ post.title }}</h6>
+                            <p class="card-text text-muted small">{{ post.body|truncatewords:20 }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}<p class="text-muted text-center">Новостей пока нет</p>{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="text-center mt-5 animate-on-scroll">
+            <a href="{% url 'public:news' %}" class="btn btn-outline-accent px-5">Все новости →</a>
+        </div>
+    </div>
+</section>

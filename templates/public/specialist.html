@@ -1,48 +1,64 @@
 {% extends 'base.html' %}
+
+{% block title %}{{ specialist.get_seo_title|default:specialist.full_name }} — {{ site_settings.salon_name }}{% endblock %}
+
 {% block content %}
-<section class="py-5">
+<section class="public-section public-section--light">
     <div class="container">
 
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'public:index' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'public:team' %}">Команда</a></li>
+                <li class="breadcrumb-item active">{{ specialist.full_name }}</li>
+            </ol>
+        </nav>
+
         <!-- Шапка специалиста -->
-        <div class="row g-4 mb-5 align-items-center">
+        <div class="row g-5 mb-5 align-items-center animate-on-scroll">
             <div class="col-md-3 text-center">
                 {% if specialist.photo %}
                 <img src="{{ specialist.photo.url }}"
                      class="rounded-circle shadow"
-                     style="width:180px;height:180px;object-fit:cover;">
+                     loading="lazy"
+                     style="width:200px;height:200px;object-fit:cover;"
+                     alt="{{ specialist.alt_text|default:specialist.full_name }}">
                 {% else %}
                 <div class="rounded-circle shadow mx-auto d-flex align-items-center justify-content-center"
-                     style="width:180px;height:180px;background:var(--color-background);">
-                    <span style="font-size:72px;color:#ccc;">👤</span>
+                     style="width:200px;height:200px;background:var(--color-bg-alt);">
+                    <span style="font-size:72px;">👤</span>
                 </div>
                 {% endif %}
             </div>
             <div class="col-md-9">
-                <h2 style="color:var(--color-primary);">{{ specialist.full_name }}</h2>
+                <h1 style="color:var(--color-secondary);">
+                    {{ specialist.get_h1|default:specialist.full_name }}
+                </h1>
                 <p class="text-muted fs-5 mb-3">{{ specialist.specialization }}</p>
                 {% if specialist.description %}
-                <p>{{ specialist.description }}</p>
+                <p class="text-muted" style="line-height:1.7;">{{ specialist.description }}</p>
                 {% endif %}
-                <a href="/#booking" class="btn btn-accent px-4">Записаться к специалисту</a>
+                <button class="btn btn-accent px-5 mt-2"
+                        data-bs-toggle="modal" data-bs-target="#bookingModal">
+                    Записаться к специалисту
+                </button>
             </div>
         </div>
 
         <!-- Документы об образовании -->
         {% if documents %}
-        <div class="mb-5">
-            <h4 class="mb-3" style="color:var(--color-secondary);">Документы об образовании</h4>
+        <div class="mb-5 animate-on-scroll">
+            <h4 class="mb-4" style="color:var(--color-secondary);">Документы об образовании</h4>
             <div class="row g-3">
                 {% for doc in documents %}
-                <div class="col-md-3">
-                    <div class="card shadow-sm h-100">
+                <div class="col-md-3 animate-on-scroll animate-delay-{{ forloop.counter }}">
+                    <div class="card h-100">
                         <div class="card-body d-flex align-items-center gap-3">
                             <span style="font-size:2rem;">📄</span>
                             <div>
-                                <p class="mb-1 fw-500">{{ doc.title }}</p>
+                                <p class="mb-1 fw-medium" style="color:var(--color-secondary);">{{ doc.title }}</p>
                                 <a href="{{ doc.file.url }}" target="_blank"
-                                   class="small" style="color:var(--color-accent);">
-                                    Открыть
-                                </a>
+                                   class="small text-accent">Открыть</a>
                             </div>
                         </div>
                     </div>
@@ -53,18 +69,18 @@
         {% endif %}
 
         <!-- Портфолио специалиста -->
-        <div class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="animate-on-scroll">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <h4 style="color:var(--color-secondary);">Работы</h4>
                 {% if categories %}
                 <div class="d-flex gap-2 flex-wrap">
-                    <a href="/specialist/{{ specialist.pk }}/"
-                       class="btn btn-sm {% if not selected_category %}btn-accent{% else %}btn-outline-secondary{% endif %}">
+                    <a href="{% url 'public:specialist_detail' specialist.slug %}"
+                       class="btn btn-sm {% if not selected_category %}btn-accent{% else %}btn-outline-accent{% endif %}">
                         Все
                     </a>
                     {% for cat in categories %}
-                    <a href="/specialist/{{ specialist.pk }}/?category={{ cat.pk }}"
-                       class="btn btn-sm {% if selected_category == cat.pk|stringformat:'s' %}btn-accent{% else %}btn-outline-secondary{% endif %}">
+                    <a href="{% url 'public:specialist_detail' specialist.slug %}?category={{ cat.pk }}"
+                       class="btn btn-sm {% if selected_category == cat.pk|stringformat:'s' %}btn-accent{% else %}btn-outline-accent{% endif %}">
                         {{ cat.name }}
                     </a>
                     {% endfor %}
@@ -74,21 +90,21 @@
 
             <div class="row g-3">
                 {% for work in works %}
-                <div class="col-md-3">
-                    <div class="card shadow-sm overflow-hidden">
+                <div class="col-6 col-md-3 animate-on-scroll animate-scale">
+                    <a href="{{ work.get_absolute_url }}" class="portfolio-item d-block">
                         {% if work.photo_watermarked %}
-                        <img src="{{ work.photo_watermarked.url }}" class="card-img-top"
-                             style="height:220px;object-fit:cover;">
+                        <img src="{{ work.photo_watermarked.url }}"
+                             style="height:220px;" loading="lazy"
+                             alt="{{ work.service_category.name|default:'' }}">
                         {% elif work.photo_original %}
-                        <img src="{{ work.photo_original.url }}" class="card-img-top"
-                             style="height:220px;object-fit:cover;">
+                        <img src="{{ work.photo_original.url }}"
+                             style="height:220px;" loading="lazy"
+                             alt="">
                         {% endif %}
-                        {% if work.service_category %}
-                        <div class="card-body p-2">
-                            <small class="text-muted">{{ work.service_category.name }}</small>
-                        </div>
-                        {% endif %}
-                    </div>
+                    </a>
+                    {% if work.service_category %}
+                    <small class="text-muted d-block mt-1 ps-1">{{ work.service_category.name }}</small>
+                    {% endif %}
                 </div>
                 {% empty %}
                 <p class="text-muted">Работ пока нет</p>

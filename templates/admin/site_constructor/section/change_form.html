@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_bottom %}
+{{ block.super }}
+{% if add %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var saveBtn = document.querySelector('input[name="_save"]');
+    if (saveBtn) saveBtn.style.display = 'none';
+});
+</script>
+{% endif %}
+{% endblock %}

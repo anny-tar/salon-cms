@@ -1,11 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-    .bg-orange {
-        background-color: #fd7e14 !important;
-        color: white;
-    }
-</style>
 <div class="container py-4">
     <h4 class="mb-3">Моё расписание — {{ specialist.full_name }}</h4>
     
@@ -21,7 +15,7 @@
     {% if appointments %}
     <div class="list-group">
         {% for appt in appointments %}
-        <a href="/specialist/my/appointment/{{ appt.pk }}/"
+        <a href="{% url 'specialists:appointment_detail' appt.pk %}"
            class="list-group-item list-group-item-action mb-2 rounded shadow-sm">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -48,7 +42,7 @@
     {% endif %}
 
     <div class="d-flex align-items-center gap-2 mb-4">
-        <a href="/specialist/my/portfolio/upload/" class="btn btn-outline-secondary btn-sm">
+        <a href="{% url 'specialists:upload_direct' %}" class="btn btn-outline-secondary btn-sm">
             + Загрузить в портфолио фото из архива
         </a>
     </div> 

@@ -1,0 +1,27 @@
+<section class="public-section {{ section_bg_class }}"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
+    <div class="container">
+        {% if section.settings.title or section.settings.subtitle %}
+        <div class="section-header section-header--center animate-on-scroll">
+            {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+            {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+            {% if section.settings.body %}<p class="section-description">{{ section.settings.body }}</p>{% endif %}
+        </div>
+        {% endif %}
+
+        {% if section.settings.map_url %}
+        <div class="animate-on-scroll">
+            <iframe src="{{ section.settings.map_url }}"
+                    class="map-iframe"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5 animate-on-scroll">
+            <p>Карта не настроена. Добавьте ссылку для встраивания в настройках секции.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>

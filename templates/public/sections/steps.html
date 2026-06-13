@@ -1,0 +1,25 @@
+<section class="public-section {{ section_bg_class }}"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
+    <div class="container">
+        {% if section.settings.title or section.settings.subtitle %}
+        <div class="section-header section-header--center animate-on-scroll">
+            {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+            {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+            {% if section.settings.description %}<p class="section-description">{{ section.settings.description }}</p>{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="row g-4 justify-content-center">
+            {% for step in section.steps.all %}
+            <div class="col-6 col-md-3 animate-on-scroll animate-delay-{{ forloop.counter }}">
+                <div class="step-card">
+                    <div class="step-number">{{ step.number }}</div>
+                    <p class="step-text mb-0">{{ step.text }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted text-center">Шаги не заполнены</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>

@@ -1,0 +1,51 @@
+<section class="public-section {{ section_bg_class }}"
+         {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
+    <div class="container">
+        {% if section.settings.title or section.settings.subtitle %}
+        <div class="section-header section-header--center animate-on-scroll">
+            {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+            {% if section.settings.subtitle %}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{% endif %}
+            {% if section.settings.description %}<p class="section-description">{{ section.settings.description }}</p>{% endif %}
+        </div>
+        {% endif %}
+
+        {% with count=section.settings.count|default:"6" %}
+        {% if section.settings.display == 'list' %}
+        <div class="list-group animate-on-scroll">
+            {% for service in live_data.services|slice:count %}
+            <a href="{{ service.get_absolute_url }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ service.name }}</strong>
+                    <span class="text-muted small ms-2">{{ service.duration }} мин.</span>
+                </div>
+                <span class="badge badge-accent rounded-pill">{{ service.price }} ₽</span>
+            </a>
+            {% empty %}<p class="text-muted text-center py-3">Услуги скоро появятся</p>{% endfor %}
+        </div>
+        {% else %}
+        <div class="row g-4">
+            {% for service in live_data.services|slice:count %}
+            <div class="col-md-4 animate-on-scroll animate-delay-{{ forloop.counter|add:0 }}">
+                <a href="{{ service.get_absolute_url }}" class="text-decoration-none">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color:var(--color-secondary);">{{ service.name }}</h5>
+                            {% if service.description %}<p class="card-text text-muted small">{{ service.description|truncatewords:15 }}</p>{% endif %}
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+                                <strong class="text-accent">{{ service.price }} ₽</strong>
+                                <span class="text-muted small">{{ service.duration }} мин.</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}<p class="text-muted text-center">Услуги скоро появятся</p>{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="text-center mt-5 animate-on-scroll">
+            <a href="{% url 'public:services' %}" class="btn btn-outline-accent px-5">Все услуги →</a>
+        </div>
+    </div>
+</section>

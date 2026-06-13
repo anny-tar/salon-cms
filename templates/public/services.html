@@ -1,47 +1,63 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block title %}Услуги — {{ site_settings.salon_name }}{% endblock %}
+
 {% block content %}
-<section class="py-5">
+<section class="public-section public-section--light">
     <div class="container">
-        <h2 class="mb-4">Услуги</h2>
-
-        {% if categories %}
-        <div class="d-flex gap-2 flex-wrap mb-4">
-            <a href="/services/" class="btn btn-sm {% if not selected_category %}btn-accent{% else %}btn-outline-secondary{% endif %}">
-                Все
-            </a>
-            {% for cat in categories %}
-            <a href="/services/?category={{ cat.pk }}"
-               class="btn btn-sm {% if selected_category == cat.pk|stringformat:'s' %}btn-accent{% else %}btn-outline-secondary{% endif %}">
-                {{ cat.name }}
-            </a>
-            {% endfor %}
+        <div class="section-header section-header--center animate-on-scroll">
+            <h1>Услуги</h1>
         </div>
-        {% endif %}
 
-        <div class="row g-3">
-            {% for service in services %}
+        {# Строка фильтров #}
+        <div class="row g-3 mb-5 animate-on-scroll">
+            <div class="col-md-6">
+                <input type="text" id="filter-search" class="form-control form-control-lg"
+                       placeholder="Поиск по названию...">
+            </div>
             <div class="col-md-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ service.name }}</h5>
-                        {% if service.category %}
-                        <span class="badge mb-2" style="background:var(--color-secondary);color:#fff;">
-                            {{ service.category.name }}
-                        </span>
-                        {% endif %}
-                        <p class="card-text text-muted small">{{ service.description }}</p>
-                        <p class="mb-1 fw-bold">{{ service.price }} руб.</p>
-                        <p class="text-muted small">{{ service.duration }} мин.</p>
+                <select id="filter-category" class="form-select form-select-lg">
+                    <option value="">Все категории</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.name|lower }}">{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for service in services %}
+            <div class="col-md-4 animate-on-scroll"
+                 data-filter-item
+                 data-name="{{ service.name|lower }}"
+                 data-category="{{ service.category.name|lower|default:'' }}">
+                <a href="{{ service.get_absolute_url }}" class="text-decoration-none">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color:var(--color-secondary);">{{ service.name }}</h5>
+                            {% if service.category %}
+                            <span class="badge badge-accent mb-2">{{ service.category.name }}</span>
+                            {% endif %}
+                            {% if service.description %}
+                            <p class="card-text text-muted small">{{ service.description|truncatewords:15 }}</p>
+                            {% endif %}
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                                <strong class="text-accent">{{ service.price }} ₽</strong>
+                                <span class="text-muted small">{{ service.duration }} мин.</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer bg-transparent">
-                        <a href="/#booking" class="btn btn-accent btn-sm w-100">Записаться</a>
-                    </div>
-                </div>
+                </a>
             </div>
             {% empty %}
-            <p class="text-muted">Услуги скоро появятся</p>
+            <div class="col-12 text-center text-muted py-5">Услуги скоро появятся</div>
             {% endfor %}
         </div>
+        <p id="no-results" class="text-center text-muted py-4 d-none">Ничего не найдено</p>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/filter.js' %}"></script>
 {% endblock %}
