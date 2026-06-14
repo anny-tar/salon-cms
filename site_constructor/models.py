@@ -45,6 +45,16 @@ class SiteSettings(models.Model):
     watermark_text    = models.CharField('Текст водяного знака', max_length=100, blank=True)
     watermark_opacity = models.FloatField('Прозрачность (0.1 — 1.0)', default=0.3)
 
+    # Яндекс SmartCaptcha
+    captcha_client_key = models.CharField(
+        'SmartCaptcha — клиентский ключ', max_length=100, blank=True,
+        help_text='Клиентский ключ из Яндекс Cloud (sitekey)',
+    )
+    captcha_server_key = models.CharField(
+        'SmartCaptcha — серверный ключ', max_length=100, blank=True,
+        help_text='Серверный ключ для проверки токена на сервере',
+    )
+
     # SEO главной страницы
     seo_title        = models.CharField('SEO заголовок (title)', max_length=255, blank=True)
     meta_description = models.TextField('Meta description', max_length=300, blank=True)
@@ -213,3 +223,37 @@ class SectionStep(models.Model):
 
     def __str__(self):
         return f'{self.number}. {self.text[:50]}'
+
+
+class SalonContact(models.Model):
+    TYPE_PHONE    = 'phone'
+    TYPE_EMAIL    = 'email'
+    TYPE_VK       = 'vk'
+    TYPE_TELEGRAM = 'telegram'
+    TYPE_WHATSAPP = 'whatsapp'
+    TYPE_MAX      = 'max'
+
+    TYPE_CHOICES = [
+        (TYPE_PHONE,    'Телефон'),
+        (TYPE_EMAIL,    'Email'),
+        (TYPE_VK,       'ВКонтакте'),
+        (TYPE_TELEGRAM, 'Telegram'),
+        (TYPE_WHATSAPP, 'WhatsApp'),
+        (TYPE_MAX,      'Мессенджер MAX'),
+    ]
+
+    type      = models.CharField('Тип', max_length=20, choices=TYPE_CHOICES)
+    label     = models.CharField('Название', max_length=100,
+                                 help_text='Например: «Администратор», «WhatsApp для записи»')
+    value     = models.CharField('Значение', max_length=255,
+                                 help_text='Телефон, email, ссылка или @username')
+    is_active = models.BooleanField('Активен', default=True)
+    order     = models.PositiveSmallIntegerField('Порядок', default=0)
+
+    class Meta:
+        verbose_name = 'Контакт'
+        verbose_name_plural = 'Контакты салона'
+        ordering = ['order']
+
+    def __str__(self):
+        return f'{self.get_type_display()} — {self.label}: {self.value}'

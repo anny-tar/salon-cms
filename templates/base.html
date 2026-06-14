@@ -49,6 +49,8 @@
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/public.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
 
     {% block extra_css %}{% endblock %}
 </head>
@@ -126,7 +128,7 @@
 <!-- ── Модальное окно записи ─────────────────────────────────────── -->
 <div class="modal fade" id="bookingModal" tabindex="-1"
      aria-labelledby="bookingModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header" style="background:var(--color-primary);color:#fff;">
                 <h5 class="modal-title" id="bookingModalLabel">Онлайн-запись</h5>
@@ -139,57 +141,90 @@
                 </div>
                 <div id="modal-booking-error" class="alert alert-danger d-none"></div>
                 <div id="modal-booking-form">
-                    <div class="mb-3">
-                        <label class="form-label">Ваше имя</label>
-                        <input type="text" id="mb-name" class="form-control"
-                               placeholder="Имя Фамилия">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Телефон</label>
-                        <input type="text" id="mb-phone" class="form-control"
-                               placeholder="+7 (999) 000-00-00">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Специалист</label>
-                        <select id="mb-specialist" class="form-select">
-                            <option value="">Выберите специалиста</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Услуга</label>
-                        <select id="mb-service" class="form-select">
-                            <option value="">Сначала выберите специалиста</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Дата</label>
-                        <input type="date" id="mb-date" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Время</label>
-                        <select id="mb-time" class="form-select">
-                            <option value="">Сначала выберите специалиста, услугу и дату</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <div class="mb-3">
-                            <label class="form-label">Фото-референс <span class="text-muted small">(необязательно, до 2 фото)</span></label>
+                    <div class="row g-3">
+                        {# Имя и телефон #}
+                        <div class="col-md-6">
+                            <label class="form-label">Ваше имя <span class="text-danger">*</span></label>
+                            <input type="text" id="mb-name" class="form-control"
+                                   placeholder="Имя Фамилия" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Телефон <span class="text-danger">*</span></label>
+                            <input type="text" id="mb-phone" class="form-control"
+                                   placeholder="+7 (999) 000-00-00" required>
+                        </div>
+
+                        {# Услуга #}
+                        <div class="col-md-6">
+                            <label class="form-label">Услуга</label>
+                            <select id="mb-service" class="form-select">
+                                <option value="">Выберите услугу</option>
+                            </select>
+                        </div>
+
+                        {# Мастер #}
+                        <div class="col-md-6">
+                            <label class="form-label">Мастер</label>
+                            <select id="mb-specialist" class="form-select">
+                                <option value="">Выберите мастера</option>
+                            </select>
+                        </div>
+
+                        {# Дата #}
+                        <div class="col-md-6">
+                            <label class="form-label">Дата</label>
+                            <input type="date" id="mb-date" class="form-control">
+                        </div>
+
+                        {# Время #}
+                        <div class="col-md-6">
+                            <label class="form-label">Время</label>
+                            <select id="mb-time" class="form-select">
+                                <option value="">Сначала выберите мастера, услугу и дату</option>
+                            </select>
+                        </div>
+
+                        {# Референсы #}
+                        <div class="col-12">
+                            <label class="form-label">
+                                Фото-референс
+                                <span class="text-muted small">(необязательно, до 2 фото)</span>
+                            </label>
                             <input type="file" id="mb-ref1" class="form-control mb-2" accept="image/*">
                             <input type="file" id="mb-ref2" class="form-control" accept="image/*">
                             <div class="form-text">Загрузите фото желаемого результата</div>
                         </div>
-                        <input type="checkbox" class="form-check-input" id="mb-consent">
-                        <label class="form-check-label" for="mb-consent">
-                            Согласен на обработку персональных данных
-                            {% if site_settings.privacy_policy %}
-                            (<a href="{{ site_settings.privacy_policy.url }}"
-                                target="_blank">политика</a>)
-                            {% endif %}
-                        </label>
+
+                        {# Согласие на обработку ПД #}
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="mb-consent" required>
+                                <label class="form-check-label small" for="mb-consent">
+                                    Я даю согласие на обработку персональных данных
+                                    {% if site_settings.privacy_policy %}
+                                    в соответствии с
+                                    <a href="{{ site_settings.privacy_policy.url }}"
+                                       target="_blank" class="text-accent">
+                                        Политикой конфиденциальности
+                                    </a>
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+
+                        {# SmartCaptcha — после согласия #}
+                        {% if site_settings.captcha_client_key %}
+                        <div class="col-12">
+                            <div id="captcha-container"
+                                 class="smart-captcha"
+                                 data-sitekey="{{ site_settings.captcha_client_key }}">
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" id="modal-footer">
                 <button type="button" class="btn btn-secondary"
                         data-bs-dismiss="modal">Отмена</button>
                 <button type="button" id="mb-submit" class="btn btn-accent" disabled>
@@ -200,127 +235,183 @@
     </div>
 </div>
 
+{% if site_settings.captcha_client_key %}
+<script src="https://smartcaptcha.yandexcloud.net/captcha.js" defer></script>
+{% endif %}
+
 <script>
 (function() {
-    const csrf = '{{ csrf_token }}';
+    var csrf = '{{ csrf_token }}';
+    var captchaRequired = {{ site_settings.captcha_client_key|yesno:"true,false" }};
 
-    // Загружаем специалистов при открытии модала
-    const modal = document.getElementById('bookingModal');
+    var modal      = document.getElementById('bookingModal');
+    var selService = document.getElementById('mb-service');
+    var selSpec    = document.getElementById('mb-specialist');
+    var inpDate    = document.getElementById('mb-date');
+    var selTime    = document.getElementById('mb-time');
+    var chkConsent = document.getElementById('mb-consent');
+    var btnSubmit  = document.getElementById('mb-submit');
+
     if (!modal) return;
 
+    // ── Инициализация при открытии модала ────────────────────────────
     modal.addEventListener('show.bs.modal', function () {
-        const sel = document.getElementById('mb-specialist');
-        if (sel && sel.options.length <= 1) {
-            fetch('/ajax/services-for-specialist/?specialist=')
-                .catch(() => {});
-            // Загружаем список специалистов
-            fetch('/specialist-list-json/')
-                .then(r => r.json())
-                .then(data => {
-                    sel.innerHTML = '<option value="">Выберите специалиста</option>';
-                    (data.specialists || []).forEach(sp => {
-                        const o = document.createElement('option');
-                        o.value = sp.id; o.textContent = sp.full_name;
-                        sel.appendChild(o);
-                    });
-                })
-                .catch(() => {});
-        }
-        // Сбрасываем форму
         document.getElementById('modal-booking-success').classList.add('d-none');
         document.getElementById('modal-booking-error').classList.add('d-none');
         document.getElementById('modal-booking-form').classList.remove('d-none');
-        document.getElementById('mb-submit').disabled = true;
+        document.getElementById('modal-footer').classList.remove('d-none');
+        updateSubmitBtn();
+        loadServices();
+        loadSpecialists();
     });
 
-    function mbLoadServices(specialistId) {
-        const sel = document.getElementById('mb-service');
-        sel.innerHTML = '<option value="">Загрузка...</option>';
-        if (!specialistId) {
-            sel.innerHTML = '<option value="">Сначала выберите специалиста</option>';
+    // ── Загрузка услуг ────────────────────────────────────────────────
+    function loadServices() {
+        var specId = selSpec.value;
+        var url = '/ajax/available-services/';
+        if (specId) url += '?specialist=' + specId;
+
+        fetch(url).then(r => r.json()).then(function(data) {
+            var current = selService.value;
+            selService.innerHTML = '<option value="">Выберите услугу</option>';
+            data.services.forEach(function(s) {
+                var o = document.createElement('option');
+                o.value = s.id;
+                o.textContent = s.name + ' — ' + s.price + ' ₽ (' + s.duration + ' мин.)';
+                if (s.id == current) o.selected = true;
+                selService.appendChild(o);
+            });
+            if (window.$ && $(selService).data('select2')) $(selService).trigger('change');
+        });
+    }
+
+    // ── Загрузка мастеров ─────────────────────────────────────────────
+    function loadSpecialists() {
+        var serviceId = selService.value;
+        var date      = inpDate.value;
+        var url = '/ajax/available-specialists/?';
+        if (serviceId) url += 'service=' + serviceId + '&';
+        if (date)      url += 'date=' + date;
+
+        fetch(url).then(r => r.json()).then(function(data) {
+            var current = selSpec.value;
+            selSpec.innerHTML = '<option value="">Выберите мастера</option>';
+            data.specialists.forEach(function(sp) {
+                var o = document.createElement('option');
+                o.value = sp.id;
+                o.textContent = sp.name + ' — ' + sp.specialization;
+                if (sp.id == current) o.selected = true;
+                selSpec.appendChild(o);
+            });
+            if (window.$ && $(selSpec).data('select2')) $(selSpec).trigger('change');
+        });
+    }
+
+    // ── Загрузка слотов ───────────────────────────────────────────────
+    function loadSlots() {
+        var specId    = selSpec.value;
+        var serviceId = selService.value;
+        var date      = inpDate.value;
+
+        selTime.innerHTML = '<option value="">Выберите время</option>';
+
+        if (!specId || !serviceId || !date) {
+            selTime.innerHTML = '<option value="">Сначала выберите мастера, услугу и дату</option>';
+            updateSubmitBtn();
             return;
         }
-        fetch('/ajax/services-for-specialist/?specialist=' + specialistId)
-            .then(r => r.json())
-            .then(data => {
-                sel.innerHTML = '<option value="">Выберите услугу</option>';
-                (data.services || []).forEach(s => {
-                    const o = document.createElement('option');
-                    o.value = s.id; o.textContent = s.name;
-                    sel.appendChild(o);
-                });
-                mbLoadSlots();
-            });
-    }
 
-    function mbLoadSlots() {
-        const specialist = document.getElementById('mb-specialist')?.value;
-        const service    = document.getElementById('mb-service')?.value;
-        const date       = document.getElementById('mb-date')?.value;
-        const timeSel    = document.getElementById('mb-time');
-        if (!specialist || !service || !date) {
-            timeSel.innerHTML = '<option value="">Сначала заполните поля выше</option>';
-            mbUpdateSubmit(); return;
-        }
-        fetch('/ajax/slots/?specialist=' + specialist + '&service=' + service + '&date=' + date)
+        fetch('/ajax/available-slots/?specialist=' + specId +
+              '&service=' + serviceId + '&date=' + date)
             .then(r => r.json())
-            .then(data => {
-                timeSel.innerHTML = '';
+            .then(function(data) {
                 if (data.day_off) {
-                    timeSel.innerHTML = '<option value="">Специалист не работает в этот день</option>';
-                } else if (!data.slots?.length) {
-                    timeSel.innerHTML = '<option value="">Нет доступных слотов</option>';
+                    selTime.innerHTML = '<option value="">Мастер не работает в этот день</option>';
+                } else if (!data.slots.length) {
+                    selTime.innerHTML = '<option value="">Нет свободных слотов</option>';
                 } else {
-                    timeSel.innerHTML = '<option value="">Выберите время</option>';
-                    data.slots.forEach(s => {
-                        const o = document.createElement('option');
+                    selTime.innerHTML = '<option value="">Выберите время</option>';
+                    data.slots.forEach(function(s) {
+                        var o = document.createElement('option');
                         o.value = s; o.textContent = s;
-                        timeSel.appendChild(o);
+                        selTime.appendChild(o);
                     });
                 }
-                mbUpdateSubmit();
+                updateSubmitBtn();
             });
     }
 
-    function mbUpdateSubmit() {
-        const ok = document.getElementById('mb-consent')?.checked
-                && !!document.getElementById('mb-time')?.value;
-        document.getElementById('mb-submit').disabled = !ok;
+    // ── Кнопка записаться активна когда всё заполнено ────────────────
+    function updateSubmitBtn() {
+        var captchaOk = !captchaRequired ||
+            !!document.querySelector('.smart-captcha input[name="smart-token"]')?.value;
+        var ok = selService.value && selSpec.value &&
+                 inpDate.value && selTime.value &&
+                 chkConsent.checked && captchaOk;
+        btnSubmit.disabled = !ok;
     }
 
-    document.getElementById('mb-specialist')?.addEventListener('change', e => mbLoadServices(e.target.value));
-    document.getElementById('mb-service')?.addEventListener('change', mbLoadSlots);
-    document.getElementById('mb-date')?.addEventListener('change', mbLoadSlots);
-    document.getElementById('mb-consent')?.addEventListener('change', mbUpdateSubmit);
+    // ── События ───────────────────────────────────────────────────────
+    selService.addEventListener('change', function() {
+        loadSpecialists();
+        loadSlots();
+    });
+    selSpec.addEventListener('change', function() {
+        loadServices();
+        loadSlots();
+    });
+    inpDate.addEventListener('change', function() {
+        loadSpecialists();
+        loadSlots();
+    });
+    selTime.addEventListener('change', updateSubmitBtn);
+    chkConsent.addEventListener('change', updateSubmitBtn);
 
-    document.getElementById('mb-submit')?.addEventListener('click', function() {
-        const fd = new FormData();
+    // ── Отправка формы ────────────────────────────────────────────────
+    btnSubmit.addEventListener('click', function() {
+        var fd = new FormData();
         fd.append('full_name',  document.getElementById('mb-name').value);
         fd.append('phone',      document.getElementById('mb-phone').value);
-        fd.append('specialist', document.getElementById('mb-specialist').value);
-        fd.append('service',    document.getElementById('mb-service').value);
-        fd.append('date',       document.getElementById('mb-date').value);
-        fd.append('time_start', document.getElementById('mb-time').value);
+        fd.append('specialist', selSpec.value);
+        fd.append('service',    selService.value);
+        fd.append('date',       inpDate.value);
+        fd.append('time_start', selTime.value);
         fd.append('pd_consent', 'true');
         fd.append('csrfmiddlewaretoken', csrf);
-        const ref1 = document.getElementById('mb-ref1')?.files[0];
-        const ref2 = document.getElementById('mb-ref2')?.files[0];
+
+        // Референсы
+        var ref1 = document.getElementById('mb-ref1')?.files[0];
+        var ref2 = document.getElementById('mb-ref2')?.files[0];
         if (ref1) fd.append('reference_photo',   ref1);
         if (ref2) fd.append('reference_photo_2', ref2);
 
+        // SmartCaptcha токен
+        if (captchaRequired) {
+            var token = document.querySelector(
+                '.smart-captcha input[name="smart-token"]'
+            )?.value;
+            if (token) fd.append('smart_token', token);
+        }
+
         fetch('/ajax/book/', { method: 'POST', body: fd })
             .then(r => r.json())
-            .then(res => {
+            .then(function(res) {
                 if (res.success) {
                     document.getElementById('modal-booking-form').classList.add('d-none');
                     document.getElementById('modal-booking-success').classList.remove('d-none');
+                    document.getElementById('modal-footer').classList.add('d-none');
                 } else {
-                    const e = document.getElementById('modal-booking-error');
-                    e.textContent = res.error;
+                    var e = document.getElementById('modal-booking-error');
+                    e.textContent = res.error || 'Произошла ошибка. Попробуйте ещё раз.';
                     e.classList.remove('d-none');
                 }
             });
     });
+
+    // ── Минимальная дата — сегодня ────────────────────────────────────
+    var today = new Date().toISOString().split('T')[0];
+    if (inpDate) inpDate.min = today;
+
 })();
 </script>
 

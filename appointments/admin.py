@@ -12,6 +12,7 @@ STATUS_COLORS = {
 }
 
 
+
 class ReferencePhotoInline(admin.TabularInline):
     model  = AppointmentReferencePhoto
     extra  = 0
@@ -26,7 +27,7 @@ class AppointmentAdmin(admin.ModelAdmin):
     list_display    = ('date', 'time_start', 'time_end', 'client', 'specialist', 'service', 'colored_status')
     list_filter     = ('status', 'date', 'specialist')
     search_fields   = ('client__full_name', 'client__phone', 'specialist__full_name')
-    readonly_fields = ('time_end', 'created_at', 'updated_at')
+    readonly_fields = ('time_end', 'created_at', 'updated_at', 'pd_consent_datetime')
     date_hierarchy  = 'date'
     inlines         = [ReferencePhotoInline]
 

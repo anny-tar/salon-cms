@@ -9,40 +9,80 @@
             <h1>Портфолио</h1>
         </div>
 
-        {# Строка фильтров #}
-        <div class="row g-3 mb-5 animate-on-scroll">
-            <div class="col-md-5">
-                <select id="filter-specialist" class="form-select form-select-lg">
-                    <option value="">Все специалисты</option>
-                    {% for sp in specialists %}
-                    <option value="{{ sp.full_name|lower }}">{{ sp.full_name }}</option>
-                    {% endfor %}
-                </select>
+        <div class="row g-3 mb-5 align-items-end animate-on-scroll">
+            <div class="col-md-4">
+                <label class="form-label text-muted small">Поиск по мастеру</label>
+                <input type="text" id="filter-search" class="form-control"
+                       placeholder="Имя мастера...">
             </div>
-            <div class="col-md-5">
-                <select id="filter-category" class="form-select form-select-lg">
+            <div class="col-md-4">
+                <label class="form-label text-muted small">Категория услуги</label>
+                <select id="filter-category" class="form-select select2-filter">
                     <option value="">Все категории</option>
                     {% for cat in categories %}
                     <option value="{{ cat.name|lower }}">{{ cat.name }}</option>
                     {% endfor %}
                 </select>
             </div>
+            <div class="col-md-4">
+                <label class="form-label text-muted small">Услуга</label>
+                <select id="filter-service" class="form-select select2-filter">
+                    <option value="">Все услуги</option>
+                    {% for svc in services %}
+                    <option value="{{ svc.name|lower }}">{{ svc.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
-        <div class="row g-3">
+        <div class="row g-4">
             {% for work in works %}
-            <div class="col-6 col-md-3 animate-on-scroll animate-scale"
+            <div class="col-6 col-md-3 animate-on-scroll"
                  data-filter-item
-                 data-specialist="{{ work.specialist.full_name|lower }}"
-                 data-category="{{ work.service_category.name|lower|default:'' }}">
-                <a href="{{ work.get_absolute_url }}" class="portfolio-item d-block">
-                    {% if work.photo_watermarked %}
-                    <img src="{{ work.photo_watermarked.url }}" loading="lazy"
-                         style="height:220px;" alt="{{ work.specialist.full_name }}">
-                    {% elif work.photo_original %}
-                    <img src="{{ work.photo_original.url }}" loading="lazy"
-                         style="height:220px;" alt="{{ work.specialist.full_name }}">
-                    {% endif %}
+                 data-name="{{ work.specialist.full_name|lower }}"
+                 data-category="{{ work.service_category.name|lower|default:'' }}"
+                 data-service="{{ work.service.name|lower|default:'' }}">
+                <a href="{{ work.get_absolute_url }}" class="text-decoration-none">
+                    <div class="card h-100">
+                        {% if work.photo_watermarked %}
+                        <img src="{{ work.photo_watermarked.url }}" class="card-img-top" loading="lazy"
+                             style="height:220px;object-fit:cover;" alt="{{ work.specialist.full_name }}">
+                        {% elif work.photo_original %}
+                        <img src="{{ work.photo_original.url }}" class="card-img-top" loading="lazy"
+                             style="height:220px;object-fit:cover;" alt="{{ work.specialist.full_name }}">
+                        {% endif %}
+                        <div class="card-body p-3">
+                            {# Мастер #}
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                {% if work.specialist.photo %}
+                                <img src="{{ work.specialist.photo.url }}" class="rounded-circle" loading="lazy"
+                                     style="width:32px;height:32px;object-fit:cover;"
+                                     alt="{{ work.specialist.full_name }}">
+                                {% endif %}
+                                <div>
+                                    <a href="{{ work.specialist.get_absolute_url }}"
+                                       class="small fw-medium text-decoration-none"
+                                       style="color:var(--color-secondary);"
+                                       onclick="event.stopPropagation()">
+                                        {{ work.specialist.full_name }}
+                                    </a>
+                                    <p class="text-muted mb-0" style="font-size:11px;">
+                                        {{ work.specialist.specialization }}
+                                    </p>
+                                </div>
+                            </div>
+                            {# Услуга #}
+                            {% if work.service %}
+                            <a href="{{ work.service.get_absolute_url }}"
+                               class="badge badge-accent text-decoration-none small"
+                               onclick="event.stopPropagation()">
+                                {{ work.service.name }}
+                            </a>
+                            {% elif work.service_category %}
+                            <span class="badge badge-accent small">{{ work.service_category.name }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </a>
             </div>
             {% empty %}

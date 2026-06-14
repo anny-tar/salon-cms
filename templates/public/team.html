@@ -1,16 +1,37 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Команда — {{ site_settings.salon_name }}{% endblock %}
 
 {% block content %}
 <section class="public-section public-section--light">
     <div class="container">
         <div class="section-header section-header--center animate-on-scroll">
-            <h2>Наша команда</h2>
+            <h1>Наша команда</h1>
         </div>
+
+        <div class="row g-3 mb-5 align-items-end animate-on-scroll">
+            <div class="col-md-5">
+                <label class="form-label text-muted small">Поиск по имени</label>
+                <input type="text" id="filter-search" class="form-control form-control-lg"
+                       placeholder="Имя специалиста...">
+            </div>
+            <div class="col-md-5">
+                <label class="form-label text-muted small">Специализация</label>
+                <select id="filter-specialist" class="form-select select2-filter">
+                    <option value="">Все специализации</option>
+                    {% for sp in specialists %}
+                    <option value="{{ sp.full_name|lower }}">{{ sp.specialization }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
         <div class="row g-4">
             {% for specialist in specialists %}
-            <div class="col-6 col-md-3 animate-on-scroll animate-delay-{{ forloop.counter }}">
+            <div class="col-6 col-md-3 animate-on-scroll animate-delay-{{ forloop.counter }}"
+                 data-filter-item
+                 data-name="{{ specialist.full_name|lower }}"
+                 data-specialist="{{ specialist.full_name|lower }}">
                 <a href="{% url 'public:specialist_detail' specialist.slug %}"
                    class="text-decoration-none">
                     <div class="card h-100 text-center">
@@ -33,11 +54,14 @@
                 </a>
             </div>
             {% empty %}
-            <div class="col-12 text-center text-muted py-5">
-                <p>Специалисты скоро появятся</p>
-            </div>
+            <div class="col-12 text-center text-muted py-5">Специалисты скоро появятся</div>
             {% endfor %}
         </div>
+        <p id="no-results" class="text-center text-muted py-4 d-none">Ничего не найдено</p>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/filter.js' %}"></script>
 {% endblock %}

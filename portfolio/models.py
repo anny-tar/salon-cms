@@ -42,6 +42,11 @@ class PortfolioWork(SeoMixin, models.Model):
         ServiceCategory, on_delete=models.SET_NULL,
         null=True, blank=True, verbose_name='Категория услуги',
     )
+    service = models.ForeignKey(
+        'services.Service', on_delete=models.SET_NULL,
+        null=True, blank=True, verbose_name='Услуга',
+        help_text='Конкретная услуга которая была выполнена',
+    )
     appointment = models.ForeignKey(
         Appointment, on_delete=models.SET_NULL,
         null=True, blank=True, verbose_name='Визит',

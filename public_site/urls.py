@@ -23,6 +23,9 @@ urlpatterns = [
 
     # AJAX
     path('ajax/slots/',                      views.get_slots,                   name='get_slots'),
+    path('ajax/available-services/',         views.available_services,           name='available_services'),
+    path('ajax/available-specialists/',      views.available_specialists,        name='available_specialists'),
+    path('ajax/available-slots/',            views.available_slots,              name='available_slots'),
     path('ajax/book/',                       views.book_appointment,             name='book'),
     path('ajax/services-for-specialist/',    views.get_services_for_specialist,  name='services_for_specialist'),
     path('ajax/specialists-for-service/',    views.get_specialists_for_service,  name='specialists_for_service'),

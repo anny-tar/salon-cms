@@ -9,14 +9,15 @@
             <h1>Услуги</h1>
         </div>
 
-        {# Строка фильтров #}
-        <div class="row g-3 mb-5 animate-on-scroll">
+        <div class="row g-3 mb-5 align-items-end animate-on-scroll">
             <div class="col-md-6">
+                <label class="form-label text-muted small">Поиск</label>
                 <input type="text" id="filter-search" class="form-control form-control-lg"
-                       placeholder="Поиск по названию...">
+                       placeholder="Название услуги...">
             </div>
             <div class="col-md-4">
-                <select id="filter-category" class="form-select form-select-lg">
+                <label class="form-label text-muted small">Категория</label>
+                <select id="filter-category" class="form-select select2-filter">
                     <option value="">Все категории</option>
                     {% for cat in categories %}
                     <option value="{{ cat.name|lower }}">{{ cat.name }}</option>

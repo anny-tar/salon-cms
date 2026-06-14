@@ -1,6 +1,43 @@
+# Virtual environment
 venv/
+env/
+ENV/
+
+# Python
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+*.so
+.Python
+
+# Database
 db.sqlite3
+*.db
+*.sqlite3
+
+# Media and static (collected)
 media/
+staticfiles/
+/staticfiles/
+static_collected/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Django
+*.log
+*.pot
+*.pyc
+coverage/
+htmlcov/
+.django_settings
+
+# OS
+.DS_Store
+Thumbs.db

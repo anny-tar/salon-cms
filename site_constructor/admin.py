@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 from ordered_model.admin import OrderedModelAdmin
-from .models import SiteSettings, SitePage, Section, SectionStep
+from .models import SiteSettings, SitePage, Section, SectionStep, SalonContact
 
 
 class SiteSettingsForm(forms.ModelForm):
@@ -33,6 +33,10 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         }),
         ('Документы', {
             'fields': ('privacy_policy',),
+        }),
+        ('Яндекс SmartCaptcha', {
+            'fields': ('captcha_client_key', 'captcha_server_key'),
+            'description': 'Ключи из Яндекс Cloud. Оставьте пустыми чтобы отключить капчу.',
         }),
         ('SEO главной страницы', {
             'fields': ('seo_title', 'meta_description', 'robots'),
@@ -111,3 +115,12 @@ class SectionAdmin(OrderedModelAdmin):
 
     class Media:
         js = ('site_constructor/section_edit.js',)
+
+
+@admin.register(SalonContact)
+class SalonContactAdmin(admin.ModelAdmin):
+    list_display  = ('label', 'type', 'value', 'is_active', 'order')
+    list_editable = ('is_active', 'order')
+    list_filter   = ('type', 'is_active')
+    ordering      = ('order',)
+    fields        = ('type', 'label', 'value', 'is_active', 'order')

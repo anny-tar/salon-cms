@@ -9,14 +9,15 @@
             <h1>Новости и акции</h1>
         </div>
 
-        {# Строка фильтров #}
-        <div class="row g-3 mb-5 animate-on-scroll">
+        <div class="row g-3 mb-5 align-items-end animate-on-scroll">
             <div class="col-md-6">
+                <label class="form-label text-muted small">Поиск</label>
                 <input type="text" id="filter-search" class="form-control form-control-lg"
-                       placeholder="Поиск по заголовку...">
+                       placeholder="Заголовок новости или акции...">
             </div>
             <div class="col-md-4">
-                <select id="filter-type" class="form-select form-select-lg">
+                <label class="form-label text-muted small">Тип</label>
+                <select id="filter-type" class="form-select select2-filter">
                     <option value="">Все публикации</option>
                     <option value="news">Новости</option>
                     <option value="promo">Акции</option>

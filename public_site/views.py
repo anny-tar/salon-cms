@@ -34,18 +34,15 @@ def index(request):
 
 
 def portfolio(request):
-    works       = PortfolioWork.objects.filter(is_visible=True).select_related('specialist', 'service_category')
+    works       = PortfolioWork.objects.filter(is_visible=True).select_related(
+        'specialist', 'service_category', 'service'
+    )
     specialists = Specialist.objects.filter(is_active=True)
     categories  = ServiceCategory.objects.all()
-    specialist_id = request.GET.get('specialist')
-    category_id   = request.GET.get('category')
-    if specialist_id:
-        works = works.filter(specialist_id=specialist_id)
-    if category_id:
-        works = works.filter(service_category_id=category_id)
+    services    = Service.objects.filter(is_active=True)
     return render(request, 'public/portfolio.html', {
-        'works': works, 'specialists': specialists, 'categories': categories,
-        'selected_specialist': specialist_id, 'selected_category': category_id,
+        'works': works, 'specialists': specialists,
+        'categories': categories, 'services': services,
     })
 
 
@@ -259,3 +256,73 @@ def portfolio_detail(request, slug):
         'work':    work,
         'related': related,
     })
+
+
+# ── Умная форма записи — AJAX ─────────────────────────────────────────
+
+def available_services(request):
+    """Услуги доступные для записи — фильтр по мастеру."""
+    specialist_id = request.GET.get('specialist')
+    date          = request.GET.get('date')
+
+    services = Service.objects.filter(is_active=True)
+
+    if specialist_id:
+        services = services.filter(specialists__id=specialist_id)
+
+    data = [{'id': s.id, 'name': s.name, 'price': str(s.price),
+              'duration': s.duration} for s in services]
+    return JsonResponse({'services': data})
+
+
+def available_specialists(request):
+    """Мастера доступные для записи — фильтр по услуге и дате."""
+    import datetime as dt
+    service_id = request.GET.get('service')
+    date_str   = request.GET.get('date')
+
+    specialists = Specialist.objects.filter(is_active=True)
+
+    if service_id:
+        specialists = specialists.filter(services__id=service_id)
+
+    # Фильтруем по дате — только те кто работает в этот день
+    if date_str:
+        try:
+            date = dt.date.fromisoformat(date_str)
+            available = []
+            for sp in specialists:
+                if sp.get_hours_for_date(date) is not None:
+                    available.append(sp)
+            specialists = available
+        except ValueError:
+            pass
+
+    data = [{'id': sp.id, 'name': sp.full_name,
+              'specialization': sp.specialization,
+              'photo': sp.photo.url if sp.photo else None}
+            for sp in (specialists if isinstance(specialists, list)
+                       else specialists.select_related())]
+    return JsonResponse({'specialists': data})
+
+
+def available_slots(request):
+    """Доступные слоты — по мастеру, услуге и дате."""
+    import datetime as dt
+    specialist_id = request.GET.get('specialist')
+    service_id    = request.GET.get('service')
+    date_str      = request.GET.get('date')
+
+    if not all([specialist_id, service_id, date_str]):
+        return JsonResponse({'slots': [], 'day_off': False})
+
+    try:
+        specialist = Specialist.objects.get(pk=specialist_id, is_active=True)
+        service    = Service.objects.get(pk=service_id, is_active=True)
+        date       = dt.date.fromisoformat(date_str)
+    except (Specialist.DoesNotExist, Service.DoesNotExist, ValueError):
+        return JsonResponse({'slots': [], 'day_off': False})
+
+    from specialists.services import get_available_slots
+    slots, day_off = get_available_slots(specialist, service, date)
+    return JsonResponse({'slots': slots, 'day_off': day_off})

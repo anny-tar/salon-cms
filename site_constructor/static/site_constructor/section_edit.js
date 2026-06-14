@@ -80,26 +80,26 @@ const SECTION_FIELDS = {
     },
 
     contacts: {
-        title:         { label: 'Заголовок',               type: 'text', placeholder: 'Контакты' },
-        subtitle:      { label: 'Подзаголовок',            type: 'text', placeholder: '' },
-        contacts_side: { label: 'Расположение контактов',  type: 'select',
-                         options: ['left:Слева', 'right:Справа', 'none:Не показывать'] },
-        phone:         { label: 'Телефон',                 type: 'text', placeholder: '+7 (900) 000-00-00' },
-        email:         { label: 'Email',                   type: 'text', placeholder: 'info@salon.ru' },
-        vk:            { label: 'ВКонтакте',               type: 'text', placeholder: 'https://vk.com/...' },
-        telegram:      { label: 'Telegram',                type: 'text', placeholder: '@username' },
-        whatsapp:      { label: 'WhatsApp',                type: 'text', placeholder: '+7 900 000-00-00' },
-        instagram:     { label: 'Instagram',               type: 'text', placeholder: 'https://instagram.com/...' },
+        title:         { label: 'Заголовок',                 type: 'text',     placeholder: 'Контакты' },
+        subtitle:      { label: 'Подзаголовок',              type: 'text',     placeholder: '' },
+        description:   { label: 'Текст',                     type: 'textarea', placeholder: '' },
+        contacts_side: { label: 'Расположение контактов',    type: 'select',
+                         options: ['none:Не показывать', 'left:Слева', 'center:По центру', 'right:Справа'],
+                         help: 'Контакты берутся из раздела «Контакты салона» в меню' },
         form_side:     { label: 'Расположение формы записи', type: 'select',
-                         options: ['right:Справа', 'left:Слева', 'none:Не показывать'] },
+                         options: ['none:Не показывать', 'right:Справа', 'center:По центру', 'left:Слева'] },
     },
 
     map: {
         title:    { label: 'Заголовок',    type: 'text',     placeholder: 'Как нас найти' },
         subtitle: { label: 'Подзаголовок', type: 'text',     placeholder: '' },
         body:     { label: 'Текст',        type: 'textarea', placeholder: 'Описание как добраться...' },
-        map_url:  { label: 'Ссылка для встраивания карты (src из iframe)', type: 'textarea',
-                    placeholder: 'https://yandex.ru/map-widget/v1/?...' },
+        map_url:  {
+            label: 'Ссылка для встраивания Яндекс Карты',
+            type: 'textarea',
+            placeholder: 'https://yandex.ru/map-widget/v1/?...',
+            help: '1. Откройте Яндекс Карты и найдите ваш адрес\n2. Нажмите «Поделиться» → «Встроить на сайт»\n3. Скопируйте только значение атрибута src из кода iframe\nПример: https://yandex.ru/map-widget/v1/?ll=37.6&z=16',
+        },
     },
 };
 
@@ -186,22 +186,22 @@ document.addEventListener('DOMContentLoaded', function () {
             var val     = current[key] !== undefined ? current[key] : '';
             var safeVal = String(val).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 
-            html += '<div class="form-row"><div>';
-            html += '<label style="font-weight:600;">' + field.label + ':</label>';
+            html += '<div class="form-row"><div style="width:100%;">';
+            html += '<label style="font-weight:600;display:block;margin-bottom:4px;">' + field.label + ':</label>';
 
             if (field.type === 'text') {
                 html += '<input type="text" data-key="' + key + '" value="' + safeVal + '"'
                       + ' placeholder="' + (field.placeholder || '') + '"'
-                      + ' class="vTextField">';
+                      + ' style="width:100%;" class="vTextField">';
 
             } else if (field.type === 'textarea') {
                 html += '<textarea data-key="' + key + '" rows="4"'
                       + ' placeholder="' + (field.placeholder || '') + '"'
-                      + ' style="width:100%;max-width:800px;">'
+                      + ' style="width:100%;">'
                       + safeVal + '</textarea>';
 
             } else if (field.type === 'select') {
-                html += '<select data-key="' + key + '">';
+                html += '<select data-key="' + key + '" style="width:100%;">';
                 field.options.forEach(function (opt) {
                     var v, l;
                     if (opt.indexOf(':') !== -1) {
@@ -213,17 +213,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 html += '</select>';
             }
 
+            if (field.help) {
+                html += '<p class="help" style="white-space:pre-line;color:#666;font-size:12px;margin-top:4px;">' + field.help + '</p>';
+            }
             html += '</div></div>';
         });
 
         html += '</fieldset>';
         container.innerHTML = html;
 
-        syncToTextarea();
-
+        // Не синхронизируем сразу — только при изменении пользователем
         container.querySelectorAll('[data-key]').forEach(function (el) {
-            el.addEventListener('input',  syncToTextarea);
-            el.addEventListener('change', syncToTextarea);
+            el.addEventListener('input', syncToTextarea);
+            // Select2 от Jazzmin перехватывает select — используем jQuery если доступен
+            if (el.tagName === 'SELECT' && window.django && window.django.jQuery) {
+                window.django.jQuery(el).on('change', syncToTextarea);
+            } else {
+                el.addEventListener('change', syncToTextarea);
+            }
         });
     }
 
