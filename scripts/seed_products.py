@@ -64,4 +64,4 @@ for name, description, price in products_data:
     )
     print(f"+ {p.name} (slug: {p.slug})")
 
-print(f"\n✅ Создано товаров: {Product.objects.count()}")
+print(f"\nСоздано товаров: {Product.objects.count()}")

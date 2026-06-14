@@ -1,0 +1,80 @@
+{# Форма онлайн-записи. Подключать через {% include с with prefix="mb" или prefix="sb" %} #}
+{% with p=prefix %}
+<div id="{{ p }}-booking-success" class="alert alert-success d-none">
+    Вы успешно записаны! Ожидайте звонка для подтверждения.
+</div>
+<div id="{{ p }}-booking-error" class="alert alert-danger d-none"></div>
+<div id="{{ p }}-booking-form">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Имя <span class="text-danger">*</span></label>
+            <input type="text" id="{{ p }}-name" class="form-control" placeholder="Имя Фамилия">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Телефон <span class="text-danger">*</span></label>
+            <input type="text" id="{{ p }}-phone" class="form-control booking-phone-mask"
+                   placeholder="+7 (999) 000-00-00">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Услуга</label>
+            <select id="{{ p }}-service" class="form-select">
+                <option value="">Выберите услугу</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Мастер</label>
+            <select id="{{ p }}-specialist" class="form-select">
+                <option value="">Выберите мастера</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Дата</label>
+            <input type="date" id="{{ p }}-date" class="form-control booking-date-min">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Время</label>
+            <select id="{{ p }}-time" class="form-select">
+                <option value="">Сначала выберите мастера, услугу и дату</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <label class="form-label">
+                Фото-референс
+                <span class="text-muted small">(необязательно, до 2 фото)</span>
+            </label>
+            <input type="file" id="{{ p }}-ref1" class="form-control mb-2" accept="image/*">
+            <input type="file" id="{{ p }}-ref2" class="form-control" accept="image/*">
+            <div class="form-text">Загрузите фото желаемого результата</div>
+        </div>
+        <div class="col-12">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="{{ p }}-consent" required>
+                <label class="form-check-label small" for="{{ p }}-consent">
+                    Согласен на обработку персональных данных
+                    {% if site_settings.privacy_policy %}
+                    в соответствии с
+                    <a href="{{ site_settings.privacy_policy.url }}" target="_blank" class="text-accent">
+                        Политикой конфиденциальности
+                    </a>
+                    {% endif %}
+                </label>
+            </div>
+        </div>
+        {% if site_settings.captcha_client_key %}
+        <div class="col-12">
+            <div id="{{ p }}-captcha"
+                 class="smart-captcha"
+                 data-sitekey="{{ site_settings.captcha_client_key }}">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+    {% if show_submit %}
+    <div class="col-12 mt-2">
+        <button type="button" id="{{ p }}-submit" class="btn btn-accent w-100">
+            Записаться
+        </button>
+    </div>
+    {% endif %}
+{% endwith %}

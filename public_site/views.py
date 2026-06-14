@@ -9,7 +9,7 @@ from services.models import Service, ServiceCategory
 from portfolio.models import PortfolioWork
 from products.models import Product
 from news.models import Post
-from site_constructor.models import SiteSettings
+from site_constructor.models import SiteSettings, SalonContact
 from clients.models import Client
 from appointments.models import Appointment, AppointmentReferencePhoto
 
@@ -25,11 +25,13 @@ def index(request):
         'news':        Post.objects.filter(is_published=True),
         'products':    Product.objects.filter(is_active=True),
     }
+    salon_contacts = SalonContact.objects.filter(is_active=True).order_by('order')
     return render(request, 'public/index.html', {
-        'sections':    sections,
-        'live_data':   live_data,
-        'specialists': live_data['specialists'],
-        'services':    live_data['services'],
+        'sections':       sections,
+        'live_data':      live_data,
+        'specialists':    live_data['specialists'],
+        'services':       live_data['services'],
+        'salon_contacts': salon_contacts,
     })
 
 
@@ -131,6 +133,10 @@ def book_appointment(request):
         time_start = datetime.strptime(request.POST.get('time_start'), '%H:%M').time()
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Некорректные данные: {e}'})
+
+    # Запрещаем бронирование на прошедшую дату
+    if date < timezone.now().date():
+        return JsonResponse({'success': False, 'error': 'Нельзя записаться на прошедшую дату'})
 
     client, _ = Client.objects.get_or_create(phone=phone, defaults={'full_name': full_name})
     appointment = Appointment.objects.create(

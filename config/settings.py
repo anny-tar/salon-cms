@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'reports',
     'site_constructor',
     'public_site',
+    'django.contrib.sitemaps',
 ]
 
 MIDDLEWARE = [

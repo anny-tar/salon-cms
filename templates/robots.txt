@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /ajax/
+Disallow: /media/
+Disallow: /static/
+Disallow: /login/
+Disallow: /logout/
+Disallow: /specialist/my/
+
+Allow: /
+
+Sitemap: https://{{ request.get_host }}/sitemap.xml

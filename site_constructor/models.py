@@ -225,7 +225,7 @@ class SectionStep(models.Model):
         return f'{self.number}. {self.text[:50]}'
 
 
-class SalonContact(models.Model):
+class SalonContact(OrderedModel):
     TYPE_PHONE    = 'phone'
     TYPE_EMAIL    = 'email'
     TYPE_VK       = 'vk'
@@ -248,12 +248,9 @@ class SalonContact(models.Model):
     value     = models.CharField('Значение', max_length=255,
                                  help_text='Телефон, email, ссылка или @username')
     is_active = models.BooleanField('Активен', default=True)
-    order     = models.PositiveSmallIntegerField('Порядок', default=0)
-
-    class Meta:
+    class Meta(OrderedModel.Meta):
         verbose_name = 'Контакт'
         verbose_name_plural = 'Контакты салона'
-        ordering = ['order']
 
     def __str__(self):
         return f'{self.get_type_display()} — {self.label}: {self.value}'

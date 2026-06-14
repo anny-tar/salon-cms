@@ -1,70 +1,127 @@
 {% extends 'base.html' %}
+{% block title %}Визит — {{ appointment.client.full_name }}{% endblock %}
+
 {% block content %}
 <div class="container py-4">
-    <a href="{% url 'specialists:my_schedule' %}" class="btn btn-outline-secondary btn-sm mb-4">← Назад</a>
+    <a href="{% url 'specialists:my_schedule' %}" class="btn btn-outline-secondary btn-sm mb-4">
+        ← Назад к расписанию
+    </a>
 
     <div class="row g-4">
+
+        {# Левая колонка — информация о визите #}
         <div class="col-md-6">
+
+            {# Карточка клиента #}
             <div class="card shadow-sm mb-4">
-                <div class="card-header" style="background: var(--color-primary); color:#fff;">
-                    <h6 class="mb-0">Карточка визита</h6>
+                <div class="card-header" style="background:var(--color-primary);color:#fff;">
+                    <h6 class="mb-0">Клиент</h6>
                 </div>
                 <div class="card-body">
-                    <h5>{{ appointment.client.full_name }}</h5>
-                    <p class="text-muted mb-1">{{ appointment.client.phone }}</p>
+                    <h5 class="mb-1">{{ appointment.client.full_name }}</h5>
+                    <p class="text-muted mb-1">
+                        <a href="tel:{{ appointment.client.phone }}" class="text-decoration-none" style="color:var(--color-accent);">
+                            {{ appointment.client.phone }}
+                        </a>
+                    </p>
                     {% if appointment.client.email %}
-                    <p class="text-muted mb-1">{{ appointment.client.email }}</p>
+                    <p class="text-muted mb-1 small">{{ appointment.client.email }}</p>
                     {% endif %}
-                    <hr>
-                    <p><strong>Услуга:</strong> {{ appointment.service.name }}</p>
-                    <p><strong>Дата:</strong> {{ appointment.date }}</p>
-                    <p><strong>Время:</strong>
-                        {{ appointment.time_start|time:"H:i" }} —
-                        {{ appointment.time_end|time:"H:i" }}
-                    </p>
-                    <p><strong>Статус:</strong>
-                        <span class="badge rounded-pill
-                            {% if appointment.status == 'pending' %}bg-warning text-dark
-                            {% elif appointment.status == 'confirmed' %}bg-success
-                            {% elif appointment.status == 'in_progress' %}bg-primary
-                            {% elif appointment.status == 'completed' %}bg-secondary
-                            {% elif appointment.status == 'no_show' %}bg-orange
-                            {% elif appointment.status == 'cancelled' %}bg-danger
-                            {% endif %}">
-                            {{ appointment.get_status_display }}
-                        </span>
-                    </p>
-                    {% if appointment.reference_photo %}
-                    <p><strong>Референс клиента:</strong></p>
-                    <img src="{{ appointment.reference_photo.url }}"
-                         class="img-fluid rounded" style="max-height:200px;">
-                    {% endif %}
-                    {% if appointment.comment %}
-                    <p class="mt-2"><strong>Комментарий:</strong> {{ appointment.comment }}</p>
+                    {% if client_visits_count %}
+                    <div class="mt-2 pt-2 border-top">
+                        <span class="text-muted small">Всего визитов: <strong>{{ client_visits_count }}</strong></span>
+                    </div>
                     {% endif %}
                 </div>
             </div>
 
+            {# Карточка визита #}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header" style="background:var(--color-primary);color:#fff;">
+                    <h6 class="mb-0">Визит</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="text-muted small">Услуга</div>
+                            <div class="fw-medium">{{ appointment.service.name }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Дата</div>
+                            <div class="fw-medium">{{ appointment.date|date:"d.m.Y" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Время</div>
+                            <div class="fw-medium">
+                                {{ appointment.time_start|time:"H:i" }} — {{ appointment.time_end|time:"H:i" }}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Статус</div>
+                            <span class="badge rounded-pill
+                                {% if appointment.status == 'pending' %}bg-warning text-dark
+                                {% elif appointment.status == 'confirmed' %}bg-success
+                                {% elif appointment.status == 'in_progress' %}bg-primary
+                                {% elif appointment.status == 'completed' %}bg-secondary
+                                {% elif appointment.status == 'no_show' %}bg-orange
+                                {% elif appointment.status == 'cancelled' %}bg-danger
+                                {% endif %}">
+                                {{ appointment.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% if appointment.comment %}
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="text-muted small">Комментарий</div>
+                        <div>{{ appointment.comment }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Референсы клиента #}
+            {% with photos=appointment.reference_photos.all %}
+            {% if photos %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header" style="background:var(--color-secondary);color:#fff;">
+                    <h6 class="mb-0">Референсы клиента</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        {% for ref in photos %}
+                        <div class="col-6">
+                            <img src="{{ ref.photo.url }}" class="img-fluid rounded"
+                                 style="height:150px;object-fit:cover;width:100%;">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {# Смена статуса #}
             {% if appointment.status not in 'completed,cancelled,no_show' %}
             <div class="card shadow-sm mb-4">
-                <div class="card-header" style="background: var(--color-secondary); color:#fff;">
+                <div class="card-header" style="background:var(--color-secondary);color:#fff;">
                     <h6 class="mb-0">Сменить статус</h6>
                 </div>
                 <div class="card-body">
-                    <form method="post"
-                          action="{% url 'specialists:change_status' appointment.pk %}">
+                    <form method="post" action="{% url 'specialists:change_status' appointment.pk %}">
                         {% csrf_token %}
                         <div class="d-flex gap-2 flex-wrap">
-                            {% if appointment.status == 'confirmed' %}
+                            {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
                             <button name="status" value="in_progress"
-                                    class="btn btn-accent btn-sm">В процессе</button>
+                                    class="btn btn-accent btn-sm">▶ В процессе</button>
                             {% endif %}
                             {% if appointment.status == 'in_progress' %}
-                            <button name="status" value="completed" 
-                                    class="btn btn-secondary btn-sm">Завершена</button>
+                            <button name="status" value="completed"
+                                    class="btn btn-secondary btn-sm">✓ Завершена</button>
                             {% endif %}
-                            <button name="status" value="no_show" 
-                                    class="btn bg-orange btn-sm">Не явился</button>
+                            <button name="status" value="no_show"
+                                    class="btn btn-sm" style="background:#fd7e14;color:#fff;">
+                                Не явился
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -72,9 +129,12 @@
             {% endif %}
         </div>
 
+        {# Правая колонка — фото #}
         <div class="col-md-6">
+
+            {# Загрузка фото результата #}
             <div class="card shadow-sm mb-4">
-                <div class="card-header" style="background: var(--color-primary); color:#fff;">
+                <div class="card-header" style="background:var(--color-primary);color:#fff;">
                     <h6 class="mb-0">Фото результата</h6>
                 </div>
                 <div class="card-body">
@@ -88,6 +148,11 @@
                     </div>
                     <div id="upload-error" class="alert alert-danger d-none"></div>
                     <div id="upload-form">
+                        {# Предпросмотр #}
+                        <div id="photo-preview" class="mb-3 d-none">
+                            <img id="preview-img" class="img-fluid rounded"
+                                 style="max-height:200px;object-fit:cover;width:100%;">
+                        </div>
                         <input type="file" id="photo-input" class="form-control mb-3"
                                accept="image/*">
                         <button id="upload-btn" class="btn btn-accent w-100">
@@ -102,10 +167,11 @@
                 </div>
             </div>
 
+            {# Прошлые работы с этим клиентом #}
             {% if past_works %}
             <div class="card shadow-sm">
-                <div class="card-header" style="background: var(--color-secondary); color:#fff;">
-                    <h6 class="mb-0">Прошлые работы с этим клиентом</h6>
+                <div class="card-header" style="background:var(--color-secondary);color:#fff;">
+                    <h6 class="mb-0">Прошлые работы с {{ appointment.client.full_name|truncatewords:1 }}</h6>
                 </div>
                 <div class="card-body">
                     <div class="row g-2">
@@ -120,6 +186,9 @@
                                  class="img-fluid rounded"
                                  style="height:80px;object-fit:cover;width:100%;">
                             {% endif %}
+                            <div class="text-muted" style="font-size:10px;">
+                                {{ work.work_date|date:"d.m.Y" }}
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
@@ -133,25 +202,38 @@
 {% if has_consent %}
 {% block extra_js %}
 <script>
-document.getElementById('upload-btn').addEventListener('click', function() {
-    const photo = document.getElementById('photo-input').files[0];
+// Предпросмотр фото
+document.getElementById('photo-input')?.addEventListener('change', function() {
+    var file = this.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('preview-img').src = e.target.result;
+        document.getElementById('photo-preview').classList.remove('d-none');
+    };
+    reader.readAsDataURL(file);
+});
+
+// Загрузка фото
+document.getElementById('upload-btn')?.addEventListener('click', function() {
+    var photo = document.getElementById('photo-input').files[0];
     if (!photo) { alert('Выберите фото'); return; }
 
-    const formData = new FormData();
+    var formData = new FormData();
     formData.append('photo', photo);
     formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
-    fetch('{% url 'specialists:upload_photo' appointment.pk %}', {
+    fetch('{% url "specialists:upload_photo" appointment.pk %}', {
         method: 'POST',
         body: formData,
     })
-    .then(r => r.json())
-    .then(result => {
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
         if (result.success) {
             document.getElementById('upload-form').classList.add('d-none');
             document.getElementById('upload-success').classList.remove('d-none');
         } else {
-            const err = document.getElementById('upload-error');
+            var err = document.getElementById('upload-error');
             err.textContent = result.error;
             err.classList.remove('d-none');
         }

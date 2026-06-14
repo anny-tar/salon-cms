@@ -1,12 +1,43 @@
 {% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block after_field_sets %}
+{{ block.super }}
+
+{% if section_form %}
+<fieldset class="module aligned">
+    <h2>Настройки секции</h2>
+    {% for field in section_form %}
+    <div class="form-group{% if field.errors %} errors{% endif %} field-{{ field.name }}">
+        <div class="row">
+            <label class="col-sm-3 text-start" for="{{ field.id_for_label }}">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-red">* </span>{% endif %}
+            </label>
+            <div class="col-sm-9 field-{{ field.name }}">
+                {{ field }}
+                {% if field.help_text %}
+                <div class="help" style="white-space:pre-line;">{{ field.help_text|safe }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                <div class="help" style="color:#c00;">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</fieldset>
+{% endif %}
+
+{% endblock %}
 
 {% block submit_buttons_bottom %}
 {{ block.super }}
 {% if add %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var saveBtn = document.querySelector('input[name="_save"]');
-    if (saveBtn) saveBtn.style.display = 'none';
+    var btn = document.querySelector('input[name="_save"]');
+    if (btn) btn.style.display = 'none';
 });
 </script>
 {% endif %}

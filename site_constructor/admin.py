@@ -1,9 +1,14 @@
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.html import format_html
 from ordered_model.admin import OrderedModelAdmin
 from .models import SiteSettings, SitePage, Section, SectionStep, SalonContact
+from .section_forms import get_section_form
 
+
+# ── SiteSettings ──────────────────────────────────────────────────────
 
 class SiteSettingsForm(forms.ModelForm):
     class Meta:
@@ -50,6 +55,8 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return False
 
 
+# ── SitePage ──────────────────────────────────────────────────────────
+
 @admin.register(SitePage)
 class SitePageAdmin(OrderedModelAdmin):
     list_display       = ('nav_label', 'slug', 'is_visible', 'move_up_down_links')
@@ -65,6 +72,8 @@ class SitePageAdmin(OrderedModelAdmin):
         return False
 
 
+# ── SectionStep inline ────────────────────────────────────────────────
+
 class SectionStepInline(admin.TabularInline):
     model    = SectionStep
     extra    = 1
@@ -74,11 +83,15 @@ class SectionStepInline(admin.TabularInline):
     verbose_name_plural = 'Шаги (добавьте нужное количество)'
 
 
+# ── Section ───────────────────────────────────────────────────────────
+
 @admin.register(Section)
 class SectionAdmin(OrderedModelAdmin):
     list_display       = ('icon_and_name', 'anchor', 'is_visible', 'move_up_down_links')
     list_display_links = ('icon_and_name',)
     ordering           = ('order',)
+    # settings исключён — рендерится через section_form в change_view
+    exclude            = ('settings',)
 
     def get_inlines(self, request, obj=None):
         if obj and obj.type == 'steps':
@@ -89,8 +102,8 @@ class SectionAdmin(OrderedModelAdmin):
         if obj is None:
             return ('site', 'type')
         if obj.type in ('banner', 'text_image'):
-            return ('site', 'type', 'image', 'settings', 'anchor', 'is_visible')
-        return ('site', 'type', 'settings', 'anchor', 'is_visible')
+            return ('site', 'type', 'image', 'anchor', 'is_visible')
+        return ('site', 'type', 'anchor', 'is_visible')
 
     def get_readonly_fields(self, request, obj=None):
         if obj is not None:
@@ -102,8 +115,27 @@ class SectionAdmin(OrderedModelAdmin):
             obj.is_visible = False
         super().save_model(request, obj, form, change)
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).order_by('order')
+        # Сохраняем настройки из section_form если объект уже существует
+        if change and obj.pk:
+            section_form = get_section_form(obj.type, data=request.POST)
+            if section_form and section_form.is_valid():
+                obj.settings = section_form.cleaned_data
+                obj.save(update_fields=['settings'])
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        try:
+            section = Section.objects.get(pk=object_id)
+            section_form = get_section_form(
+                section.type,
+                data=request.POST if request.method == 'POST' else None,
+                initial=section.settings,
+            )
+            extra_context['section_form']  = section_form
+            extra_context['section_type']  = section.type
+        except Section.DoesNotExist:
+            pass
+        return super().change_view(request, object_id, form_url, extra_context)
 
     @admin.display(description='Секция')
     def icon_and_name(self, obj):
@@ -113,14 +145,13 @@ class SectionAdmin(OrderedModelAdmin):
             obj.get_type_display(),
         )
 
-    class Media:
-        js = ('site_constructor/section_edit.js',)
 
+# ── SalonContact ──────────────────────────────────────────────────────
 
 @admin.register(SalonContact)
-class SalonContactAdmin(admin.ModelAdmin):
-    list_display  = ('label', 'type', 'value', 'is_active', 'order')
-    list_editable = ('is_active', 'order')
-    list_filter   = ('type', 'is_active')
-    ordering      = ('order',)
-    fields        = ('type', 'label', 'value', 'is_active', 'order')
+class SalonContactAdmin(OrderedModelAdmin):
+    list_display       = ('label', 'type', 'value', 'is_active', 'move_up_down_links')
+    list_display_links = ('label',)
+    list_filter        = ('type', 'is_active')
+    ordering           = ('order',)
+    fields             = ('type', 'label', 'value', 'is_active')

@@ -13,5 +13,5 @@ class PortfolioWorkAdmin(admin.ModelAdmin):
     list_display = ('specialist', 'service_category', 'work_date', 'source', 'is_visible')
     list_filter = ('is_visible', 'source', 'specialist')
     search_fields = ('specialist__full_name',)
-    readonly_fields = ('photo_watermarked', 'liability_datetime')
+    readonly_fields = ('photo_watermarked', 'specialist_liability', 'liability_datetime')
     list_editable = ('is_visible',)
