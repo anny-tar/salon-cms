@@ -61,17 +61,19 @@ class Migration(migrations.Migration):
             name='seo_title',
             field=models.CharField(blank=True, help_text='Если не заполнен - используется название.', max_length=255, verbose_name='SEO заголовок (title)'),
         ),
-        migrations.AddField(
-            model_name='product',
-            name='slug',
-            field=models.SlugField(blank=True, default='', help_text='Заполняется автоматически. Можно изменить вручную.', max_length=200, verbose_name='URL (slug)'),
-            preserve_default=False,
+        migrations.RunSQL(
+            sql="""
+                ALTER TABLE products_product
+                    ADD COLUMN IF NOT EXISTS slug varchar(200) NOT NULL DEFAULT '';
+            """,
+            reverse_sql=migrations.RunSQL.noop,
         ),
         migrations.RunPython(fill_slugs_product, migrations.RunPython.noop),
         migrations.RunSQL(
             sql="""
                 DROP INDEX IF EXISTS products_product_slug_70d3148d_like;
-                DROP INDEX IF EXISTS products_product_slug_key;
+                ALTER TABLE products_product
+                    DROP CONSTRAINT IF EXISTS products_product_slug_key;
                 ALTER TABLE products_product
                     ADD CONSTRAINT products_product_slug_key UNIQUE (slug);
                 CREATE INDEX products_product_slug_70d3148d_like
