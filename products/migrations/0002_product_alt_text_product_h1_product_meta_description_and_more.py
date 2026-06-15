@@ -65,11 +65,18 @@ class Migration(migrations.Migration):
             model_name='product',
             name='slug',
             field=models.SlugField(blank=True, default='', help_text='Заполняется автоматически. Можно изменить вручную.', max_length=200, verbose_name='URL (slug)'),
+            preserve_default=False,
         ),
         migrations.RunPython(fill_slugs_product, migrations.RunPython.noop),
-        migrations.AlterField(
-            model_name='product',
-            name='slug',
-            field=models.SlugField(blank=True, help_text='Заполняется автоматически. Можно изменить вручную.', max_length=200, unique=True, verbose_name='URL (slug)'),
+        migrations.RunSQL(
+            sql="""
+                DROP INDEX IF EXISTS products_product_slug_70d3148d_like;
+                DROP INDEX IF EXISTS products_product_slug_key;
+                ALTER TABLE products_product
+                    ADD CONSTRAINT products_product_slug_key UNIQUE (slug);
+                CREATE INDEX products_product_slug_70d3148d_like
+                    ON products_product (slug varchar_pattern_ops);
+            """,
+            reverse_sql=migrations.RunSQL.noop,
         ),
     ]
