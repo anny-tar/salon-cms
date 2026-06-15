@@ -9,7 +9,7 @@ from services.models import Service, ServiceCategory
 from portfolio.models import PortfolioWork
 from products.models import Product
 from news.models import Post
-from site_constructor.models import SiteSettings, Contact
+from site_constructor.models import SiteSettings, Contact, Address
 from clients.models import Client
 from appointments.models import Appointment, AppointmentReferencePhoto
 
