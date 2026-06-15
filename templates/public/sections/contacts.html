@@ -1,4 +1,4 @@
-{% with contacts_side=section.settings.contacts_side|default:"none" form_side=section.settings.form_side|default:"none" %}
+{% with contacts_side=section.settings.contacts_side|default:"none" %}
 <section class="public-section {{ section_bg_class }}"
          {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
     <div class="container">
@@ -10,11 +10,11 @@
         </div>
         {% endif %}
 
-        <div class="row g-5">
+        <div class="row g-5 align-items-start">
 
             {# Контакты #}
             {% if contacts_side != 'none' %}
-            <div class="{% if contacts_side == 'center' %}col-md-8 mx-auto{% else %}col-md-5{% endif %} animate-on-scroll {% if contacts_side == 'right' %}order-md-2{% endif %}">
+            <div class="{% if contacts_side == 'center' %}col-md-8 mx-auto{% else %}col-md-6{% endif %} animate-on-scroll {% if contacts_side == 'right' %}order-md-2{% endif %}">
                 {% if salon_contacts %}
                 <ul class="list-unstyled">
                     {% for contact in salon_contacts %}
@@ -22,44 +22,34 @@
                         <span class="text-muted small d-block">{{ contact.get_type_display }}</span>
                         <strong>{{ contact.label }}</strong>
                         {% if contact.type == 'phone' %}
-                        — <a href="tel:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
+                        - <a href="tel:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
                         {% elif contact.type == 'email' %}
-                        — <a href="mailto:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
+                        - <a href="mailto:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
                         {% elif contact.type == 'vk' %}
-                        — <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">ВКонтакте</a>
+                        - <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">ВКонтакте</a>
                         {% elif contact.type == 'telegram' %}
-                        — <a href="https://t.me/{{ contact.value|cut:'@' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
-                        {% elif contact.type == 'whatsapp' %}
-                        — <a href="https://wa.me/{{ contact.value|cut:' '|cut:'+'|cut:'-'|cut:'('|cut:')' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
+                        - <a href="https://t.me/{{ contact.value|cut:'@' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
                         {% elif contact.type == 'max' %}
-                        — <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">MAX</a>
+                        - <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">MAX</a>
                         {% else %}
-                        — {{ contact.value }}
+                        - {{ contact.value }}
                         {% endif %}
                     </li>
                     {% endfor %}
                 </ul>
                 {% endif %}
+
+                {# Кнопка записи #}
+                <div class="mt-4">
+                    <button class="btn btn-accent btn-lg"
+                            data-bs-toggle="modal" data-bs-target="#bookingModal">
+                        Записаться онлайн
+                    </button>
+                </div>
             </div>
             {% endif %}
 
-            {# Форма записи #}
-            {% if form_side != 'none' %}
-            <div class="{% if form_side == 'center' %}col-md-8 mx-auto{% else %}col-md-7{% endif %} animate-on-scroll animate-right {% if form_side == 'left' %}order-md-first{% endif %}">
-                <div class="card p-4 shadow-sm">
-                    <h5 class="mb-4" style="color:var(--color-secondary);">Записаться онлайн</h5>
-
-                    {% include 'public/_booking_form.html' with prefix='sb' show_submit=True %}
-</div>
-            </div>
-            {% endif %}
         </div>
     </div>
 </section>
-
-<script>
-(function() {
-    initBookingForm('sb');
-})();
-</script>
 {% endwith %}
