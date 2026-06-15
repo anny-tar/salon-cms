@@ -1,5 +1,5 @@
 /**
- * booking.js — умная форма онлайн-записи.
+ * booking.js - умная форма онлайн-записи.
  * Принимает prefix ('mb' для модала, 'sb' для секции contacts).
  */
 'use strict';
@@ -18,7 +18,7 @@ function initBookingForm(prefix) {
 
     if (!btnSubmit) return;
 
-    // Минимальная дата — сегодня
+    // Минимальная дата - сегодня
     var today = new Date().toISOString().split('T')[0];
     if (inpDate) inpDate.min = today;
 
@@ -39,7 +39,7 @@ function initBookingForm(prefix) {
                 data.services.forEach(function(s) {
                     var o = document.createElement('option');
                     o.value = s.id;
-                    o.textContent = s.name + ' — ' + s.price + ' ₽ (' + s.duration + ' мин.)';
+                    o.textContent = s.name + ' - ' + s.price + ' ₽ (' + s.duration + ' мин.)';
                     if (s.id == cur) o.selected = true;
                     selService.appendChild(o);
                 });
@@ -61,7 +61,7 @@ function initBookingForm(prefix) {
                 data.specialists.forEach(function(sp) {
                     var o = document.createElement('option');
                     o.value = sp.id;
-                    o.textContent = sp.name + ' — ' + sp.specialization;
+                    o.textContent = sp.name + ' - ' + sp.specialization;
                     if (sp.id == cur) o.selected = true;
                     selSpec.appendChild(o);
                 });

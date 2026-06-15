@@ -54,12 +54,12 @@ def income_report(request):
     if date_to:
         appointments = appointments.filter(date__lte=date_to)
 
-    # Итог через БД — один запрос вместо Python-цикла
+    # Итог через БД - один запрос вместо Python-цикла
     total = appointments.aggregate(total=Sum('service__price'))['total'] or 0
 
     if 'download' in request.GET:
         logger.info(
-            'Пользователь %s скачал отчёт по доходам (специалист=%s, %s — %s)',
+            'Пользователь %s скачал отчёт по доходам (специалист=%s, %s - %s)',
             request.user, selected_specialist, date_from, date_to,
         )
         response = _build_excel(appointments, total)

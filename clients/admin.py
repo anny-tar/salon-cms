@@ -30,5 +30,5 @@ class ClientAdmin(admin.ModelAdmin):
     )
 
     def tag_list(self, obj):
-        return ', '.join(t.name for t in obj.tags.all()) or '—'
+        return ', '.join(t.name for t in obj.tags.all()) or '-'
     tag_list.short_description = 'Теги'

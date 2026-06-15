@@ -31,7 +31,7 @@ def apply_watermark(image_field, settings):
             a = a.point(lambda x: int(x * settings.watermark_opacity))
             logo.putalpha(a)
 
-            # Позиция — правый нижний угол
+            # Позиция - правый нижний угол
             position = (width - logo_width - 20, height - logo_height - 20)
             overlay.paste(logo, position, logo)
         except Exception:
@@ -48,7 +48,7 @@ def apply_watermark(image_field, settings):
         text_width = bbox[2] - bbox[0]
         text_height = bbox[3] - bbox[1]
 
-        # Позиция — правый нижний угол
+        # Позиция - правый нижний угол
         x = width - text_width - 20
         y = height - text_height - 20
 

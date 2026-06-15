@@ -43,15 +43,15 @@ class SiteSettings(models.Model):
     watermark_type    = models.CharField('Тип водяного знака', max_length=10,
                                           choices=WATERMARK_CHOICES, default=WATERMARK_TEXT)
     watermark_text    = models.CharField('Текст водяного знака', max_length=100, blank=True)
-    watermark_opacity = models.FloatField('Прозрачность (0.1 — 1.0)', default=0.3)
+    watermark_opacity = models.FloatField('Прозрачность (0.1 - 1.0)', default=0.3)
 
     # Яндекс SmartCaptcha
     captcha_client_key = models.CharField(
-        'SmartCaptcha — клиентский ключ', max_length=100, blank=True,
+        'SmartCaptcha - клиентский ключ', max_length=100, blank=True,
         help_text='Клиентский ключ из Яндекс Cloud (sitekey)',
     )
     captcha_server_key = models.CharField(
-        'SmartCaptcha — серверный ключ', max_length=100, blank=True,
+        'SmartCaptcha - серверный ключ', max_length=100, blank=True,
         help_text='Серверный ключ для проверки токена на сервере',
     )
 
@@ -83,7 +83,7 @@ class SiteSettings(models.Model):
 class SitePage(OrderedModel):
     """
     Страницы публичного сайта с настройкой порядка, видимости и SEO.
-    Фиксированный набор — 5 страниц, создаётся через data migration.
+    Фиксированный набор - 5 страниц, создаётся через data migration.
     """
 
     PAGE_SERVICES  = 'services'
@@ -253,4 +253,4 @@ class SalonContact(OrderedModel):
         verbose_name_plural = 'Контакты салона'
 
     def __str__(self):
-        return f'{self.get_type_display()} — {self.label}: {self.value}'
+        return f'{self.get_type_display()} - {self.label}: {self.value}'

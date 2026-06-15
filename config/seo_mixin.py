@@ -23,7 +23,7 @@ class SeoMixin(models.Model):
         'SEO заголовок (title)',
         max_length=255,
         blank=True,
-        help_text='Если не заполнен — используется название.',
+        help_text='Если не заполнен - используется название.',
     )
     meta_description = models.TextField(
         'Meta description',
@@ -34,7 +34,7 @@ class SeoMixin(models.Model):
         'Заголовок страницы (H1)',
         max_length=255,
         blank=True,
-        help_text='Если не заполнен — используется название.',
+        help_text='Если не заполнен - используется название.',
     )
     alt_text = models.CharField(
         'Alt для главного изображения',

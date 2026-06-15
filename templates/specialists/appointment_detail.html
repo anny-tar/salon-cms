@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Визит — {{ appointment.client.full_name }}{% endblock %}
+{% block title %}Визит - {{ appointment.client.full_name }}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -9,7 +9,7 @@
 
     <div class="row g-4">
 
-        {# Левая колонка — информация о визите #}
+        {# Левая колонка - информация о визите #}
         <div class="col-md-6">
 
             {# Карточка клиента #}
@@ -53,7 +53,7 @@
                         <div class="col-6">
                             <div class="text-muted small">Время</div>
                             <div class="fw-medium">
-                                {{ appointment.time_start|time:"H:i" }} — {{ appointment.time_end|time:"H:i" }}
+                                {{ appointment.time_start|time:"H:i" }} - {{ appointment.time_end|time:"H:i" }}
                             </div>
                         </div>
                         <div class="col-6">
@@ -112,11 +112,11 @@
                         <div class="d-flex gap-2 flex-wrap">
                             {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
                             <button name="status" value="in_progress"
-                                    class="btn btn-accent btn-sm">▶ В процессе</button>
+                                    class="btn btn-primary btn-sm">В процессе</button>
                             {% endif %}
                             {% if appointment.status == 'in_progress' %}
                             <button name="status" value="completed"
-                                    class="btn btn-secondary btn-sm">✓ Завершена</button>
+                                    class="btn btn-secondary btn-sm">Завершена</button>
                             {% endif %}
                             <button name="status" value="no_show"
                                     class="btn btn-sm" style="background:#fd7e14;color:#fff;">
@@ -129,7 +129,7 @@
             {% endif %}
         </div>
 
-        {# Правая колонка — фото #}
+        {# Правая колонка - фото #}
         <div class="col-md-6">
 
             {# Загрузка фото результата #}
@@ -161,7 +161,7 @@
                     </div>
                     {% else %}
                     <div class="alert alert-warning mb-0">
-                        Согласие не загружено — обратитесь к администратору
+                        Согласие не загружено - обратитесь к администратору
                     </div>
                     {% endif %}
                 </div>

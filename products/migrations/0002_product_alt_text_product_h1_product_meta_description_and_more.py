@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='h1',
-            field=models.CharField(blank=True, help_text='Если не заполнен — используется название.', max_length=255, verbose_name='Заголовок страницы (H1)'),
+            field=models.CharField(blank=True, help_text='Если не заполнен - используется название.', max_length=255, verbose_name='Заголовок страницы (H1)'),
         ),
         migrations.AddField(
             model_name='product',
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='seo_title',
-            field=models.CharField(blank=True, help_text='Если не заполнен — используется название.', max_length=255, verbose_name='SEO заголовок (title)'),
+            field=models.CharField(blank=True, help_text='Если не заполнен - используется название.', max_length=255, verbose_name='SEO заголовок (title)'),
         ),
         migrations.AddField(
             model_name='product',

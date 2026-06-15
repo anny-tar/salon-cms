@@ -23,7 +23,7 @@ class PhotoConsent(models.Model):
         verbose_name_plural = 'Согласия на фото'
 
     def __str__(self):
-        return f'Согласие — {self.appointment}'
+        return f'Согласие - {self.appointment}'
 
 
 class PortfolioWork(SeoMixin, models.Model):
@@ -72,7 +72,7 @@ class PortfolioWork(SeoMixin, models.Model):
         ordering = ['-work_date']
 
     def __str__(self):
-        return f'{self.specialist} — {self.work_date}'
+        return f'{self.specialist} - {self.work_date}'
 
     def save(self, *args, **kwargs):
         if not self.slug:

@@ -180,7 +180,7 @@ class SpecialistAdmin(admin.ModelAdmin):
     def schedule_summary(self, obj):
         day_labels = {0:'Пн',1:'Вт',2:'Ср',3:'Чт',4:'Пт',5:'Сб',6:'Вс'}
         days = obj.work_days.values_list('weekday', flat=True).order_by('weekday')
-        return ' '.join(day_labels[d] for d in days) if days else '—'
+        return ' '.join(day_labels[d] for d in days) if days else '-'
     schedule_summary.short_description = 'Рабочие дни'
 
     # ── Действия ─────────────────────────────────────────────────────

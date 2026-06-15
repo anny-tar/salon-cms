@@ -120,6 +120,30 @@ def get_slots(request):
 def book_appointment(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Метод не поддерживается'})
+
+    # ── Проверка SmartCaptcha ─────────────────────────────────────────
+    site = SiteSettings.get()
+    if site.captcha_server_key:
+        import urllib.request, urllib.parse, json as json_lib
+        token = request.POST.get('smart_token', '')
+        if not token:
+            return JsonResponse({'success': False, 'error': 'Пройдите проверку капчи'})
+        try:
+            params = urllib.parse.urlencode({
+                'secret': site.captcha_server_key,
+                'token':  token,
+                'ip':     request.META.get('REMOTE_ADDR', ''),
+            }).encode()
+            req = urllib.request.Request(
+                'https://smartcaptcha.yandexcloud.net/validate', data=params
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                result = json_lib.loads(resp.read())
+                if result.get('status') != 'ok':
+                    return JsonResponse({'success': False, 'error': 'Проверка капчи не пройдена'})
+        except Exception:
+            return JsonResponse({'success': False, 'error': 'Ошибка проверки капчи. Попробуйте ещё раз.'})
+
     phone     = request.POST.get('phone', '').strip()
     full_name = request.POST.get('full_name', '').strip()
     if not phone or not full_name:

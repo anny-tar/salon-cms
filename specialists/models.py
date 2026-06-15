@@ -126,7 +126,7 @@ class SpecialistScheduleException(models.Model):
 
     def __str__(self):
         if self.time_start is None:
-            return f'{self.date} — выходной ({self.specialist.full_name})'
+            return f'{self.date} - выходной ({self.specialist.full_name})'
         return f'{self.date} {self.time_start.strftime("%H:%M")}–{self.time_end.strftime("%H:%M")} ({self.specialist.full_name})'
 
     @property
@@ -155,4 +155,4 @@ class SpecialistDocument(models.Model):
         verbose_name_plural = 'Документы специалиста'
 
     def __str__(self):
-        return f'{self.specialist.full_name} — {self.title}'
+        return f'{self.specialist.full_name} - {self.title}'

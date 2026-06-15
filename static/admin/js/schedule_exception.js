@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── Подсказки для полей is_day_off ────────────────────────────────
-    // Когда чекбокс «Выходной день» активен — блокируем поля времени
+    // Когда чекбокс «Выходной день» активен - блокируем поля времени
     function bindDayOffToggle(checkbox) {
         function toggle() {
             const row = checkbox.closest('.inline-related, .form-row, tr');

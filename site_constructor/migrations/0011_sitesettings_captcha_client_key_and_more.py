@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='captcha_client_key',
-            field=models.CharField(blank=True, help_text='Клиентский ключ из Яндекс Cloud (sitekey)', max_length=100, verbose_name='SmartCaptcha — клиентский ключ'),
+            field=models.CharField(blank=True, help_text='Клиентский ключ из Яндекс Cloud (sitekey)', max_length=100, verbose_name='SmartCaptcha - клиентский ключ'),
         ),
         migrations.AddField(
             model_name='sitesettings',
             name='captcha_server_key',
-            field=models.CharField(blank=True, help_text='Серверный ключ для проверки токена на сервере', max_length=100, verbose_name='SmartCaptcha — серверный ключ'),
+            field=models.CharField(blank=True, help_text='Серверный ключ для проверки токена на сервере', max_length=100, verbose_name='SmartCaptcha - серверный ключ'),
         ),
     ]

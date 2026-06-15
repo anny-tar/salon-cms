@@ -90,7 +90,7 @@ class SectionAdmin(OrderedModelAdmin):
     list_display       = ('icon_and_name', 'anchor', 'is_visible', 'move_up_down_links')
     list_display_links = ('icon_and_name',)
     ordering           = ('order',)
-    # settings исключён — рендерится через section_form в change_view
+    # settings исключён - рендерится через section_form в change_view
     exclude            = ('settings',)
 
     def get_inlines(self, request, obj=None):

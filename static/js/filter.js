@@ -1,5 +1,5 @@
 /**
- * filter.js — клиентская фильтрация с Select2
+ * filter.js - клиентская фильтрация с Select2
  */
 'use strict';
 

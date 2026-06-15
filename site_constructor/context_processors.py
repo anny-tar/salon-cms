@@ -4,7 +4,7 @@ from .models import SiteSettings, SitePage
 def site_settings(request):
     site = SiteSettings.get()
 
-    # Навигация из SitePage — только видимые, в нужном порядке
+    # Навигация из SitePage - только видимые, в нужном порядке
     pages = SitePage.objects.filter(is_visible=True).order_by('order')
     sections_nav = [
         {'label': p.nav_label, 'url': p.get_url()}

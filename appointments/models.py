@@ -49,7 +49,7 @@ class Appointment(models.Model):
         ordering = ['date', 'time_start']
 
     def __str__(self):
-        return f'{self.date} {self.time_start} — {self.client} ({self.specialist})'
+        return f'{self.date} {self.time_start} - {self.client} ({self.specialist})'
 
     def clean(self):
         """Вычисляем time_end на этапе валидации, не в save()."""

@@ -1,8 +1,8 @@
 /**
  * specialist_admin.js
  * Управление портфолио специалиста в Django admin:
- * — кнопки «Скрыть всё» / «Показать всё» в карточке
- * — диалог при деактивации (по диплому)
+ * - кнопки «Скрыть всё» / «Показать всё» в карточке
+ * - диалог при деактивации (по диплому)
  */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -93,14 +93,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Специалиста деактивируют (был активен → стал неактивен)
         if (wasActive && !nowActive) {
-            // Проверяем — есть ли вообще видимые работы
+            // Проверяем - есть ли вообще видимые работы
             const visibleCount = parseInt(document.getElementById('visible-count')?.textContent) || 0;
 
             if (visibleCount > 0) {
                 // Показываем модальное окно
                 modal.style.display = 'flex';
             }
-            // Если работ нет — диалог не нужен, просто сохраняем
+            // Если работ нет - диалог не нужен, просто сохраняем
         }
 
         wasActive = nowActive;
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('modal-cancel')?.addEventListener('click', function () {
-        // Возвращаем галочку обратно — пользователь передумал
+        // Возвращаем галочку обратно - пользователь передумал
         isActiveCheckbox.checked = true;
         wasActive = true;
         modal.style.display = 'none';

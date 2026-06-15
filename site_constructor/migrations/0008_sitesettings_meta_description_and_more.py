@@ -18,12 +18,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='news_meta_description',
-            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description — Новости'),
+            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description - Новости'),
         ),
         migrations.AddField(
             model_name='sitesettings',
             name='news_seo_title',
-            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title — Новости'),
+            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title - Новости'),
         ),
         migrations.AddField(
             model_name='sitesettings',
@@ -33,12 +33,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='portfolio_meta_description',
-            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description — Портфолио'),
+            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description - Портфолио'),
         ),
         migrations.AddField(
             model_name='sitesettings',
             name='portfolio_seo_title',
-            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title — Портфолио'),
+            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title - Портфолио'),
         ),
         migrations.AddField(
             model_name='sitesettings',
@@ -48,12 +48,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='products_meta_description',
-            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description — Товары'),
+            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description - Товары'),
         ),
         migrations.AddField(
             model_name='sitesettings',
             name='products_seo_title',
-            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title — Товары'),
+            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title - Товары'),
         ),
         migrations.AddField(
             model_name='sitesettings',
@@ -73,12 +73,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='services_meta_description',
-            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description — Услуги'),
+            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description - Услуги'),
         ),
         migrations.AddField(
             model_name='sitesettings',
             name='services_seo_title',
-            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title — Услуги'),
+            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title - Услуги'),
         ),
         migrations.AddField(
             model_name='sitesettings',
@@ -88,12 +88,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='team_meta_description',
-            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description — Команда'),
+            field=models.TextField(blank=True, max_length=300, verbose_name='Meta description - Команда'),
         ),
         migrations.AddField(
             model_name='sitesettings',
             name='team_seo_title',
-            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title — Команда'),
+            field=models.CharField(blank=True, max_length=255, verbose_name='SEO title - Команда'),
         ),
         migrations.AddField(
             model_name='sitesettings',
