@@ -22,19 +22,19 @@
                         <span class="text-muted small d-block">{{ contact.get_type_display }}</span>
                         <strong>{{ contact.label }}</strong>
                         {% if contact.type == 'phone' %}
-                        - <a href="tel:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
+                        — <a href="tel:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
                         {% elif contact.type == 'email' %}
-                        - <a href="mailto:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
+                        — <a href="mailto:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
                         {% elif contact.type == 'vk' %}
-                        - <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">ВКонтакте</a>
+                        — <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">ВКонтакте</a>
                         {% elif contact.type == 'telegram' %}
-                        - <a href="https://t.me/{{ contact.value|cut:'@' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
+                        — <a href="https://t.me/{{ contact.value|cut:'@' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
                         {% elif contact.type == 'whatsapp' %}
-                        - <a href="https://wa.me/{{ contact.value|cut:' '|cut:'+'|cut:'-'|cut:'('|cut:')' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
+                        — <a href="https://wa.me/{{ contact.value|cut:' '|cut:'+'|cut:'-'|cut:'('|cut:')' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
                         {% elif contact.type == 'max' %}
-                        - <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">MAX</a>
+                        — <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">MAX</a>
                         {% else %}
-                        - {{ contact.value }}
+                        — {{ contact.value }}
                         {% endif %}
                     </li>
                     {% endfor %}

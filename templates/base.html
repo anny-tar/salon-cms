@@ -49,6 +49,7 @@
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/public.css' %}">
+    <script src="{% static 'js/booking.js' %}" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
 
@@ -128,7 +129,6 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/imask@7.6.1/dist/imask.min.js"></script>
-<script src="{% static 'js/booking.js' %}"></script>
 <!-- ── Модальное окно записи ─────────────────────────────────────── -->
 <div class="modal fade" id="bookingModal" tabindex="-1"
      aria-labelledby="bookingModalLabel" aria-hidden="true">
@@ -173,7 +173,7 @@
 
         if (!mbInitialized) {
             mbInitialized = true;
-            initBookingForm('mb');
+                initBookingForm('mb');
         }
     });
 })();
