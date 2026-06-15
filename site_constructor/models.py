@@ -157,7 +157,7 @@ class Section(OrderedModel):
         (TYPE_PRODUCTS,  'Товары'),
         (TYPE_TEXT_IMG,  'Текст + Изображение'),
         (TYPE_STEPS,     'Шаги'),
-        (TYPE_CONTACTS,  'Контакты и форма'),
+        (TYPE_CONTACTS,  'Контакты и адреса'),
         (TYPE_MAP,       'Карта'),
     ]
 
@@ -266,6 +266,22 @@ class Address(models.Model):
 
     class Meta:
         verbose_name = 'Адрес'
+        verbose_name_plural = 'Адреса'
+
+    def __str__(self):
+        return self.name
+
+
+class Address(models.Model):
+    name    = models.CharField('Название', max_length=255,
+                               help_text='Например: «Главный офис», «Филиал на Ленина»')
+    address = models.TextField('Адрес', blank=True,
+                               help_text='Текстовый адрес для отображения')
+    map_url = models.TextField('Ссылка карты', blank=True,
+                               help_text='Значение атрибута src из iframe Яндекс Карт')
+
+    class Meta:
+        verbose_name        = 'Адрес'
         verbose_name_plural = 'Адреса'
 
     def __str__(self):
