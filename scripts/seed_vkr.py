@@ -10,6 +10,32 @@ import datetime as dt
 
 print("=== Студия красоты Элеганс - заполнение БД для ВКР ===")
 
+# ── Полная очистка БД ─────────────────────────────────────────────────
+print("Очистка БД...")
+from appointments.models import Appointment
+from portfolio.models import PortfolioWork, PhotoConsent
+from clients.models import Client
+from specialists.models import Specialist
+from services.models import Service, ServiceCategory
+from news.models import Post
+from products.models import Product
+from site_constructor.models import Section, SalonContact, SectionStep
+from django.contrib.auth.models import User
+
+Appointment.objects.all().delete()
+PhotoConsent.objects.all().delete()
+PortfolioWork.objects.all().delete()
+Client.objects.all().delete()
+Specialist.objects.all().delete()
+Service.objects.all().delete()
+ServiceCategory.objects.all().delete()
+Post.objects.all().delete()
+Product.objects.all().delete()
+Section.objects.all().delete()
+SalonContact.objects.all().delete()
+User.objects.filter(is_superuser=False).delete()
+print("+ БД очищена")
+
 # ── Группы ────────────────────────────────────────────────────────────
 owner_group, _     = Group.objects.get_or_create(name='Owner')
 admin_group, _     = Group.objects.get_or_create(name='Administrator')
@@ -62,7 +88,7 @@ if not User.objects.filter(username='manager').exists():
 # ── Настройки сайта ───────────────────────────────────────────────────
 from site_constructor.models import SiteSettings, Section, SalonContact, SitePage
 
-site, _ = SiteSettings.objects.get_or_create(pk=1, defaults={
+site, _ = SiteSettings.objects.update_or_create(pk=1, defaults={
     'salon_name':        'Студия красоты Элеганс',
     'phone':             '+7 (800) 555-01-23',
     'email':             'info@elegance-salon.ru',
