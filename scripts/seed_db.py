@@ -22,7 +22,7 @@ site, created = SiteSettings.objects.get_or_create(pk=1, defaults={
     'salon_name':        'Beauty Studio',
     'phone':             '+7 (900) 123-45-67',
     'email':             'info@beauty-studio.ru',
-    'address':           'г. Москва, ул. Цветочная, д. 5',
+    'Address':           'г. Москва, ул. Цветочная, д. 5',
     'color_primary':     '#4F81BD',
     'color_secondary':   '#2E4057',
     'color_accent':      '#F6AE2D',

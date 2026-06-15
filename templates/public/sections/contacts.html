@@ -1,7 +1,8 @@
-{% with contacts_side=section.settings.contacts_side|default:"none" %}
+{% with cs=section.settings.contacts_side|default:"none" as_=section.settings.addresses_side|default:"none" %}
 <section class="public-section {{ section_bg_class }}"
          {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
     <div class="container">
+
         {% if section.settings.title or section.settings.subtitle %}
         <div class="section-header section-header--center animate-on-scroll">
             {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
@@ -10,46 +11,53 @@
         </div>
         {% endif %}
 
+        {# Вертикальные варианты #}
+        {% if cs == 'contacts_top' %}
+        {# Контакты сверху, адреса снизу #}
+        <div class="col-md-8 mx-auto animate-on-scroll mb-4">
+            {% include 'public/sections/_contacts_block.html' %}
+        </div>
+        <div class="col-md-8 mx-auto animate-on-scroll">
+            {% include 'public/sections/_addresses_block.html' %}
+        </div>
+
+        {% elif as_ == 'addresses_top' %}
+        {# Адреса сверху, контакты снизу #}
+        <div class="col-md-8 mx-auto animate-on-scroll mb-4">
+            {% include 'public/sections/_addresses_block.html' %}
+        </div>
+        <div class="col-md-8 mx-auto animate-on-scroll">
+            {% include 'public/sections/_contacts_block.html' %}
+        </div>
+
+        {% elif cs == 'contacts_center' %}
+        {# Только контакты по центру #}
+        <div class="col-md-6 mx-auto animate-on-scroll">
+            {% include 'public/sections/_contacts_block.html' %}
+        </div>
+
+        {% elif as_ == 'addresses_center' %}
+        {# Только адреса по центру #}
+        <div class="col-md-8 mx-auto animate-on-scroll">
+            {% include 'public/sections/_addresses_block.html' %}
+        </div>
+
+        {% elif cs != 'none' or as_ != 'none' %}
+        {# Горизонтальное расположение — слева/справа #}
         <div class="row g-5 align-items-start">
-
-            {# Контакты #}
-            {% if contacts_side != 'none' %}
-            <div class="{% if contacts_side == 'center' %}col-md-8 mx-auto{% else %}col-md-6{% endif %} animate-on-scroll {% if contacts_side == 'right' %}order-md-2{% endif %}">
-                {% if salon_contacts %}
-                <ul class="list-unstyled">
-                    {% for contact in salon_contacts %}
-                    <li class="mb-3">
-                        <span class="text-muted small d-block">{{ contact.get_type_display }}</span>
-                        <strong>{{ contact.label }}</strong>
-                        {% if contact.type == 'phone' %}
-                        - <a href="tel:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
-                        {% elif contact.type == 'email' %}
-                        - <a href="mailto:{{ contact.value }}" class="text-accent text-decoration-none">{{ contact.value }}</a>
-                        {% elif contact.type == 'vk' %}
-                        - <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">ВКонтакте</a>
-                        {% elif contact.type == 'telegram' %}
-                        - <a href="https://t.me/{{ contact.value|cut:'@' }}" target="_blank" class="text-accent text-decoration-none">{{ contact.value }}</a>
-                        {% elif contact.type == 'max' %}
-                        - <a href="{{ contact.value }}" target="_blank" class="text-accent text-decoration-none">MAX</a>
-                        {% else %}
-                        - {{ contact.value }}
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-
-                {# Кнопка записи #}
-                <div class="mt-4">
-                    <button class="btn btn-accent btn-lg"
-                            data-bs-toggle="modal" data-bs-target="#bookingModal">
-                        Записаться онлайн
-                    </button>
-                </div>
+            {% if cs != 'none' %}
+            <div class="col-md-5 animate-on-scroll {% if cs == 'right' %}order-md-2{% endif %}">
+                {% include 'public/sections/_contacts_block.html' %}
             </div>
             {% endif %}
-
+            {% if as_ != 'none' %}
+            <div class="col-md-7 animate-on-scroll {% if as_ == 'left' %}order-md-1{% endif %}">
+                {% include 'public/sections/_addresses_block.html' %}
+            </div>
+            {% endif %}
         </div>
+        {% endif %}
+
     </div>
 </section>
 {% endwith %}

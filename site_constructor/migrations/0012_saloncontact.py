@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='SalonContact',
+            name='Contact',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('type', models.CharField(choices=[('phone', 'Телефон'), ('email', 'Email'), ('vk', 'ВКонтакте'), ('telegram', 'Telegram'), ('whatsapp', 'WhatsApp'), ('max', 'Мессенджер MAX')], max_length=20, verbose_name='Тип')),

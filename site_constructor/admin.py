@@ -3,8 +3,8 @@ from django.contrib import admin, messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.html import format_html
-from ordered_model.admin import OrderedModelAdmin
-from .models import SiteSettings, SitePage, Section, SectionStep, SalonContact
+from ordered_model.admin import OrderedModelAdmin, OrderedTabularInline
+from .models import SiteSettings, SitePage, Section, SectionStep, Contact, Address
 from .section_forms import get_section_form
 
 
@@ -74,10 +74,11 @@ class SitePageAdmin(OrderedModelAdmin):
 
 # ── SectionStep inline ────────────────────────────────────────────────
 
-class SectionStepInline(admin.TabularInline):
+class SectionStepInline(OrderedTabularInline):
     model    = SectionStep
     extra    = 1
-    fields   = ('order', 'number', 'text')
+    fields   = ('number', 'text', 'order', 'move_up_down_links')
+    readonly_fields = ('order', 'move_up_down_links')
     ordering = ('order',)
     verbose_name = 'Шаг'
     verbose_name_plural = 'Шаги (добавьте нужное количество)'
@@ -90,7 +91,7 @@ class SectionAdmin(OrderedModelAdmin):
     list_display       = ('icon_and_name', 'anchor', 'is_visible', 'move_up_down_links')
     list_display_links = ('icon_and_name',)
     ordering           = ('order',)
-    # settings исключён - рендерится через section_form в change_view
+    # settings исключён — рендерится через section_form в change_view
     exclude            = ('settings',)
 
     def get_inlines(self, request, obj=None):
@@ -146,12 +147,18 @@ class SectionAdmin(OrderedModelAdmin):
         )
 
 
-# ── SalonContact ──────────────────────────────────────────────────────
+# ── Contact ──────────────────────────────────────────────────────
 
-@admin.register(SalonContact)
-class SalonContactAdmin(OrderedModelAdmin):
+@admin.register(Contact)
+class ContactAdmin(OrderedModelAdmin):
     list_display       = ('label', 'type', 'value', 'is_active', 'move_up_down_links')
     list_display_links = ('label',)
     list_filter        = ('type', 'is_active')
     ordering           = ('order',)
     fields             = ('type', 'label', 'value', 'is_active')
+
+
+@admin.register(Address)
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address')
+    fields       = ('name', 'address', 'map_url')

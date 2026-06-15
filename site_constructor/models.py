@@ -43,15 +43,15 @@ class SiteSettings(models.Model):
     watermark_type    = models.CharField('Тип водяного знака', max_length=10,
                                           choices=WATERMARK_CHOICES, default=WATERMARK_TEXT)
     watermark_text    = models.CharField('Текст водяного знака', max_length=100, blank=True)
-    watermark_opacity = models.FloatField('Прозрачность (0.1 - 1.0)', default=0.3)
+    watermark_opacity = models.FloatField('Прозрачность (0.1 — 1.0)', default=0.3)
 
     # Яндекс SmartCaptcha
     captcha_client_key = models.CharField(
-        'SmartCaptcha - клиентский ключ', max_length=100, blank=True,
+        'SmartCaptcha — клиентский ключ', max_length=100, blank=True,
         help_text='Клиентский ключ из Яндекс Cloud (sitekey)',
     )
     captcha_server_key = models.CharField(
-        'SmartCaptcha - серверный ключ', max_length=100, blank=True,
+        'SmartCaptcha — серверный ключ', max_length=100, blank=True,
         help_text='Серверный ключ для проверки токена на сервере',
     )
 
@@ -83,7 +83,7 @@ class SiteSettings(models.Model):
 class SitePage(OrderedModel):
     """
     Страницы публичного сайта с настройкой порядка, видимости и SEO.
-    Фиксированный набор - 5 страниц, создаётся через data migration.
+    Фиксированный набор — 5 страниц, создаётся через data migration.
     """
 
     PAGE_SERVICES  = 'services'
@@ -225,7 +225,7 @@ class SectionStep(models.Model):
         return f'{self.number}. {self.text[:50]}'
 
 
-class SalonContact(OrderedModel):
+class Contact(OrderedModel):
     TYPE_PHONE    = 'phone'
     TYPE_EMAIL    = 'email'
     TYPE_VK       = 'vk'
@@ -250,7 +250,23 @@ class SalonContact(OrderedModel):
     is_active = models.BooleanField('Активен', default=True)
     class Meta(OrderedModel.Meta):
         verbose_name = 'Контакт'
-        verbose_name_plural = 'Контакты салона'
+        verbose_name_plural = 'Контакты'
 
     def __str__(self):
-        return f'{self.get_type_display()} - {self.label}: {self.value}'
+        return f'{self.get_type_display()} — {self.label}: {self.value}'
+
+
+class Address(models.Model):
+    name    = models.CharField('Название', max_length=255,
+                               help_text='Например: Главный офис, Филиал на Ленина')
+    address = models.TextField('Адрес', blank=True,
+                               help_text='Текстовый адрес для отображения')
+    map_url = models.TextField('Ссылка на карту', blank=True,
+                               help_text='Значение атрибута src из iframe Яндекс Карты')
+
+    class Meta:
+        verbose_name = 'Адрес'
+        verbose_name_plural = 'Адреса'
+
+    def __str__(self):
+        return self.name

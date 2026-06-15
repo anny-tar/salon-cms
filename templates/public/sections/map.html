@@ -9,18 +9,30 @@
         </div>
         {% endif %}
 
-        {% if section.settings.map_url %}
-        <div class="animate-on-scroll">
-            <iframe src="{{ section.settings.map_url }}"
-                    class="map-iframe"
-                    allowfullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
+        {% if addresses %}
+        <div class="row g-4">
+            {% for addr in addresses %}
+            <div class="{% if addresses|length == 1 %}col-12{% elif addresses|length == 2 %}col-md-6{% else %}col-md-4{% endif %} animate-on-scroll">
+                <h5 class="mb-2" style="color:var(--color-secondary);">{{ addr.name }}</h5>
+                {% if addr.address %}
+                <p class="text-muted small mb-2">{{ addr.address }}</p>
+                {% endif %}
+                {% if addr.map_url %}
+                <div class="ratio ratio-4x3 rounded overflow-hidden shadow-sm">
+                    <iframe src="{{ addr.map_url }}"
+                            frameborder="0" allowfullscreen="true"
+                            style="position:relative;"></iframe>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
         </div>
-        {% else %}
-        <div class="text-center text-muted py-5 animate-on-scroll">
-            <p>Карта не настроена. Добавьте ссылку для встраивания в настройках секции.</p>
+        {% elif section.settings.map_url %}
+        {# Обратная совместимость — старый формат с одной картой в settings #}
+        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm animate-on-scroll">
+            <iframe src="{{ section.settings.map_url }}"
+                    frameborder="0" allowfullscreen="true"
+                    style="position:relative;"></iframe>
         </div>
         {% endif %}
     </div>

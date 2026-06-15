@@ -19,7 +19,7 @@ from specialists.models import Specialist
 from services.models import Service, ServiceCategory
 from news.models import Post
 from products.models import Product
-from site_constructor.models import Section, SalonContact, SectionStep
+from site_constructor.models import Section, Contact, SectionStep
 from django.contrib.auth.models import User
 
 Appointment.objects.all().delete()
@@ -32,7 +32,7 @@ ServiceCategory.objects.all().delete()
 Post.objects.all().delete()
 Product.objects.all().delete()
 Section.objects.all().delete()
-SalonContact.objects.all().delete()
+Contact.objects.all().delete()
 User.objects.filter(is_superuser=False).delete()
 print("+ БД очищена")
 
@@ -86,13 +86,13 @@ if not User.objects.filter(username='manager').exists():
     print("+ Администратор: manager / Manager2024!")
 
 # ── Настройки сайта ───────────────────────────────────────────────────
-from site_constructor.models import SiteSettings, Section, SalonContact, SitePage
+from site_constructor.models import SiteSettings, Section, Contact, SitePage
 
 site, _ = SiteSettings.objects.update_or_create(pk=1, defaults={
     'salon_name':        'Студия красоты Элеганс',
     'phone':             '+7 (800) 555-01-23',
     'email':             'info@elegance-salon.ru',
-    'address':           'г. Цветоград, ул. Весенняя, д. 12, оф. 3',
+    'Address':           'г. Цветоград, ул. Весенняя, д. 12, оф. 3',
     'color_primary':     '#8B5E83',
     'color_secondary':   '#3D2B3D',
     'color_accent':      '#E8A0BF',
@@ -108,7 +108,7 @@ site, _ = SiteSettings.objects.update_or_create(pk=1, defaults={
 print(f"+ Настройки сайта: {site.salon_name}")
 
 # ── Контакты салона ───────────────────────────────────────────────────
-SalonContact.objects.all().delete()
+Contact.objects.all().delete()
 contacts_data = [
     ('phone',    'Администратор',       '+7 (800) 555-01-23', 0),
     ('phone',    'Запись и вопросы',    '+7 (900) 123-45-67', 1),
@@ -118,7 +118,7 @@ contacts_data = [
     ('max',      'Мессенджер MAX',      'https://max.ru/elegance', 5),
 ]
 for ctype, label, value, order in contacts_data:
-    SalonContact.objects.create(
+    Contact.objects.create(
         type=ctype, label=label, value=value,
         is_active=True, order=order,
     )

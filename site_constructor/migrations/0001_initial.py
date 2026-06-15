@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('logo', models.ImageField(blank=True, null=True, upload_to='branding/', verbose_name='Логотип')),
                 ('favicon', models.ImageField(blank=True, null=True, upload_to='branding/', verbose_name='Фавиконка')),
                 ('phone', models.CharField(blank=True, max_length=20, verbose_name='Телефон')),
-                ('address', models.CharField(blank=True, max_length=255, verbose_name='Адрес')),
+                ('Address', models.CharField(blank=True, max_length=255, verbose_name='Адрес')),
                 ('color_primary', models.CharField(default='#4F81BD', max_length=7, verbose_name='Основной цвет')),
                 ('color_secondary', models.CharField(default='#2E4057', max_length=7, verbose_name='Вторичный цвет')),
                 ('color_accent', models.CharField(default='#F6AE2D', max_length=7, verbose_name='Акцентный цвет')),

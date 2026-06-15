@@ -48,9 +48,12 @@ class TextImageSectionForm(forms.Form):
     body     = forms.CharField(label='Текст', required=False,
                                widget=forms.Textarea(attrs={'rows': 5}))
     layout   = forms.ChoiceField(label='Расположение', choices=[
-        ('img_right', 'Текст слева, фото справа'),
-        ('img_left',  'Фото слева, текст справа'),
-        ('img_bottom','Текст сверху, фото снизу'),
+        ('img_right',  'Текст слева, фото справа'),
+        ('img_left',   'Фото слева, текст справа'),
+        ('text_top',   'Текст сверху, фото снизу — по центру'),
+        ('img_top',    'Фото сверху, текст снизу — по центру'),
+        ('text_only',  'Нет фото, текст по центру'),
+        ('img_only',   'Нет текста, фото по центру'),
     ])
 
 
@@ -68,16 +71,18 @@ class ContactsSectionForm(forms.Form):
     description   = forms.CharField(label='Текст', required=False,
                                     widget=forms.Textarea(attrs={'rows': 3}))
     contacts_side = forms.ChoiceField(label='Расположение контактов', choices=[
-        ('none',   'Не показывать'),
-        ('left',   'Слева'),
-        ('center', 'По центру'),
-        ('right',  'Справа'),
+        ('none',          'Не показывать'),
+        ('left',          'Слева'),
+        ('right',         'Справа'),
+        ('top',           'Контакты сверху, адреса снизу — по центру'),
+        ('center',        'По центру (без адресов)'),
     ])
-    form_side     = forms.ChoiceField(label='Расположение формы записи', choices=[
-        ('none',   'Не показывать'),
-        ('right',  'Справа'),
-        ('center', 'По центру'),
-        ('left',   'Слева'),
+    address_side  = forms.ChoiceField(label='Расположение адресов', choices=[
+        ('none',          'Не показывать'),
+        ('right',         'Справа'),
+        ('left',          'Слева'),
+        ('bottom',        'Адреса снизу, контакты сверху — по центру'),
+        ('center',        'По центру (без контактов)'),
     ])
 
 

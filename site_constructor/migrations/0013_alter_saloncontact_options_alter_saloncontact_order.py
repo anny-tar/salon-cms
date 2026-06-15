@@ -11,11 +11,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name='saloncontact',
+            name='Contact',
             options={'ordering': ('order',), 'verbose_name': 'Контакт', 'verbose_name_plural': 'Контакты салона'},
         ),
         migrations.AlterField(
-            model_name='saloncontact',
+            model_name='Contact',
             name='order',
             field=models.PositiveIntegerField(db_index=True, editable=False, verbose_name='order'),
         ),
