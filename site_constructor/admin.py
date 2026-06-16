@@ -74,12 +74,11 @@ class SitePageAdmin(OrderedModelAdmin):
 
 # ── SectionStep inline ────────────────────────────────────────────────
 
-class SectionStepInline(OrderedTabularInline):
+class SectionStepInline(admin.TabularInline):
     model    = SectionStep
     extra    = 1
-    fields   = ('number', 'text', 'order', 'move_up_down_links')
-    readonly_fields = ('order', 'move_up_down_links')
-    ordering = ('order',)
+    fields   = ('number', 'text')
+    ordering = ('id',)
     verbose_name = 'Шаг'
     verbose_name_plural = 'Шаги (добавьте нужное количество)'
 
