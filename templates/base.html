@@ -19,9 +19,7 @@
 
     <meta property="og:site_name" content="{{ site_settings.salon_name }}">
     <meta property="og:type" content="website">
-    {% block og_title %}
-    <meta property="og:title" content="{% block title_og %}{{ site_settings.salon_name }}{% endblock %}">
-    {% endblock %}
+    {% block og_title %}<meta property="og:title" content="{% block title_og %}{{ site_settings.salon_name }}{% endblock %}">{% endblock %}
     {% block og_description %}
     {% if site_settings.meta_description %}
     <meta property="og:description" content="{{ site_settings.meta_description }}">
@@ -81,7 +79,9 @@
                 </li>
                 {% endfor %}
                 <li class="nav-item">
-                    <a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#bookingModal">Записаться</a>
+                    <a class="nav-link" href="#"
+                       data-bs-toggle="modal" data-bs-target="#bookingModal"
+                       onclick="return false;">Записаться</a>
                 </li>
             </ul>
         </div>
@@ -128,8 +128,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/imask@7.6.1/dist/imask.min.js"></script>
-
-<!-- Модальное окно записи -->
+<!-- ── Модальное окно записи ─────────────────────────────────────── -->
 <div class="modal fade" id="bookingModal" tabindex="-1"
      aria-labelledby="bookingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -153,8 +152,9 @@
     </div>
 </div>
 
+
 {% if site_settings.captcha_client_key %}
-<script src="https://smartcaptcha.yandexcloud.net/captcha.js?robustness=medium" defer></script>
+<script src="https://smartcaptcha.yandexcloud.net/captcha.js" defer></script>
 {% endif %}
 
 <script>
@@ -172,7 +172,7 @@
 
         if (!mbInitialized) {
             mbInitialized = true;
-            initBookingForm('mb');
+                initBookingForm('mb');
         }
     });
 })();
