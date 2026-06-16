@@ -3,6 +3,7 @@
          {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
     <div class="container">
         {% get_address section.settings.address as address %}
+
         {% if section.settings.title or section.settings.subtitle %}
         <div class="section-header section-header--center animate-on-scroll">
             {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
@@ -12,22 +13,20 @@
         {% endif %}
 
         {% if address %}
-        <div class="row g-4 align-items-center">
-            <div class="col-md-4 animate-on-scroll">
-                <h5 class="mb-2" style="color:var(--color-secondary);">{{ address.name }}</h5>
+        <div class="col-md-10 mx-auto animate-on-scroll">
+            <div class="text-center mb-3">
+                <h5 class="mb-1" style="color:var(--color-secondary);">{{ address.name }}</h5>
                 {% if address.address %}
                 <p class="text-muted">{{ address.address }}</p>
                 {% endif %}
             </div>
-            <div class="col-md-8 animate-on-scroll">
-                {% if address.map_url %}
-                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                    <iframe src="{{ address.map_url }}"
-                            frameborder="0" allowfullscreen="true"
-                            style="position:relative;"></iframe>
-                </div>
-                {% endif %}
+            {% if address.map_url %}
+            <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                <iframe src="{{ address.map_url }}"
+                        frameborder="0" allowfullscreen="true"
+                        style="position:relative;"></iframe>
             </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>

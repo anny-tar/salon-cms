@@ -25,13 +25,13 @@ def index(request):
         'news':        Post.objects.filter(is_published=True),
         'products':    Product.objects.filter(is_active=True),
     }
-    salon_contacts = Contact.objects.filter(is_active=True).order_by('order')
+    contacts = Contact.objects.filter(is_active=True).order_by('order')
     return render(request, 'public/index.html', {
         'sections':       sections,
         'live_data':      live_data,
         'specialists':    live_data['specialists'],
         'services':       live_data['services'],
-        'salon_contacts': salon_contacts,
+        'contacts': contacts,
         'addresses':      Address.objects.all(),
     })
 
