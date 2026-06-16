@@ -699,14 +699,14 @@ for i, (sec_type, settings, anchor) in enumerate(sections_data):
 
 steps_section = Section.objects.filter(site=site, type='steps').first()
 if steps_section:
-    for number, text, order in [
-        ('01', 'Выберите услугу и удобное время через форму на сайте', 0),
-        ('02', 'Наш администратор позвонит для подтверждения записи', 1),
-        ('03', 'Приходите в студию - мастер встретит вас в назначенное время', 2),
-        ('04', 'Наслаждайтесь результатом и делитесь впечатлениями!', 3),
+    for number, text in [
+        ('01', 'Выберите услугу и удобное время через форму на сайте'),
+        ('02', 'Наш администратор позвонит для подтверждения записи'),
+        ('03', 'Приходите в студию - мастер встретит вас в назначенное время'),
+        ('04', 'Наслаждайтесь результатом и делитесь впечатлениями!'),
     ]:
         SectionStep.objects.create(
-            section=steps_section, number=number, text=text, order=order
+            section=steps_section, number=number, text=text
         )
 
 print(f"+ Секции ({len(sections_data)} шт.) + шаги")
