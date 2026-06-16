@@ -1,17 +1,13 @@
 {% if addresses %}
-{% for addr in addresses %}
-<div class="mb-4">
-    <h5 style="color:var(--color-secondary);">{{ addr.name }}</h5>
-    {% if addr.address %}
-    <p class="text-muted">{{ addr.address }}</p>
-    {% endif %}
-    {% if addr.map_url %}
-    <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-        <iframe src="{{ addr.map_url }}"
-                frameborder="0" allowfullscreen="true"
-                style="position:relative;"></iframe>
-    </div>
-    {% endif %}
-</div>
-{% endfor %}
+<ul class="list-unstyled">
+    {% for addr in addresses %}
+    <li class="mb-3">
+        <span class="text-muted small d-block">Адрес</span>
+        <strong>{{ addr.name }}</strong>
+        {% if addr.address %}
+        <br>{{ addr.address }}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
 {% endif %}

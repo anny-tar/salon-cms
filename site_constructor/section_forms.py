@@ -87,23 +87,23 @@ class ContactsSectionForm(forms.Form):
 
 
 class MapSectionForm(forms.Form):
-    title   = forms.CharField(label='Заголовок', max_length=255, required=False)
-    subtitle= forms.CharField(label='Подзаголовок', max_length=255, required=False)
-    body    = forms.CharField(label='Текст', required=False,
-                              widget=forms.Textarea(attrs={'rows': 3}))
-    map_url = forms.CharField(
-        label='Ссылка для встраивания Яндекс Карты',
+    title    = forms.CharField(label='Заголовок', max_length=255, required=False)
+    subtitle = forms.CharField(label='Подзаголовок', max_length=255, required=False)
+    body     = forms.CharField(label='Текст', required=False,
+                               widget=forms.Textarea(attrs={'rows': 3}))
+    address  = forms.ChoiceField(
+        label='Адрес',
         required=False,
-        widget=forms.Textarea(attrs={
-            'rows': 3,
-            'placeholder': 'https://yandex.ru/map-widget/v1/?...',
-        }),
-        help_text=(
-            '1. Откройте Яндекс Карты и найдите адрес\n'
-            '2. Нажмите «Поделиться» → «Встроить на сайт»\n'
-            '3. Скопируйте значение атрибута src из iframe'
-        ),
+        help_text='Выберите адрес из раздела «Адреса» в меню. '
+                  'Карта берётся из ссылки указанной в этом адресе.',
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import Address
+        choices = [('', '— выберите адрес —')]
+        choices += [(str(a.pk), a.name) for a in Address.objects.all()]
+        self.fields['address'].choices = choices
 
 
 SECTION_FORM_MAP = {

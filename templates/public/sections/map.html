@@ -1,6 +1,8 @@
+{% load site_constructor_extras %}
 <section class="public-section {{ section_bg_class }}"
          {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
     <div class="container">
+        {% get_address section.settings.address as address %}
         {% if section.settings.title or section.settings.subtitle %}
         <div class="section-header section-header--center animate-on-scroll">
             {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
@@ -9,30 +11,23 @@
         </div>
         {% endif %}
 
-        {% if addresses %}
-        <div class="row g-4">
-            {% for addr in addresses %}
-            <div class="{% if addresses|length == 1 %}col-12{% elif addresses|length == 2 %}col-md-6{% else %}col-md-4{% endif %} animate-on-scroll">
-                <h5 class="mb-2" style="color:var(--color-secondary);">{{ addr.name }}</h5>
-                {% if addr.address %}
-                <p class="text-muted small mb-2">{{ addr.address }}</p>
+        {% if address %}
+        <div class="row g-4 align-items-center">
+            <div class="col-md-4 animate-on-scroll">
+                <h5 class="mb-2" style="color:var(--color-secondary);">{{ address.name }}</h5>
+                {% if address.address %}
+                <p class="text-muted">{{ address.address }}</p>
                 {% endif %}
-                {% if addr.map_url %}
-                <div class="ratio ratio-4x3 rounded overflow-hidden shadow-sm">
-                    <iframe src="{{ addr.map_url }}"
+            </div>
+            <div class="col-md-8 animate-on-scroll">
+                {% if address.map_url %}
+                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                    <iframe src="{{ address.map_url }}"
                             frameborder="0" allowfullscreen="true"
                             style="position:relative;"></iframe>
                 </div>
                 {% endif %}
             </div>
-            {% endfor %}
-        </div>
-        {% elif section.settings.map_url %}
-        {# Обратная совместимость — старый формат с одной картой в settings #}
-        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm animate-on-scroll">
-            <iframe src="{{ section.settings.map_url }}"
-                    frameborder="0" allowfullscreen="true"
-                    style="position:relative;"></iframe>
         </div>
         {% endif %}
     </div>
