@@ -2,7 +2,6 @@
 <section class="public-section {{ section_bg_class }}"
          {% if section.anchor %}id="{{ section.anchor }}"{% endif %}>
     <div class="container">
-        {% get_address section.settings.address as address %}
 
         {% if section.settings.title or section.settings.subtitle %}
         <div class="section-header section-header--center animate-on-scroll">
@@ -12,6 +11,7 @@
         </div>
         {% endif %}
 
+        {% with address=map_addresses|get_item:section.pk %}
         {% if address %}
         <div class="col-md-10 mx-auto animate-on-scroll">
             <div class="text-center mb-3">
@@ -30,5 +30,7 @@
             {% endif %}
         </div>
         {% endif %}
+        {% endwith %}
+
     </div>
 </section>

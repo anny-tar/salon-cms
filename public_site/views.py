@@ -26,13 +26,25 @@ def index(request):
         'products':    Product.objects.filter(is_active=True),
     }
     contacts = Contact.objects.filter(is_active=True).order_by('order')
+
+    # Для секций типа "map" подставляем выбранный адрес как объект
+    map_addresses = {}
+    for section in sections:
+        if section.type == 'map':
+            address_id = section.settings.get('address')
+            if address_id:
+                try:
+                    map_addresses[section.pk] = Address.objects.get(pk=address_id)
+                except (Address.DoesNotExist, ValueError, TypeError):
+                    map_addresses[section.pk] = None
+
     return render(request, 'public/index.html', {
-        'sections':       sections,
-        'live_data':      live_data,
-        'specialists':    live_data['specialists'],
-        'services':       live_data['services'],
-        'contacts': contacts,
-        'addresses':      Address.objects.all(),
+        'sections':      sections,
+        'live_data':     live_data,
+        'specialists':   live_data['specialists'],
+        'services':      live_data['services'],
+        'contacts':      contacts,
+        'map_addresses': map_addresses,
     })
 
 
