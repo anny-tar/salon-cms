@@ -3,8 +3,8 @@ from django.contrib import admin, messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.html import format_html
-from ordered_model.admin import OrderedModelAdmin, OrderedTabularInline
-from .models import SiteSettings, SitePage, Section, SectionStep, Contact, Address
+from ordered_model.admin import OrderedModelAdmin, OrderedTabularInline, OrderedTabularInline
+from .models import SiteSettings, SitePage, Section, SectionStep, Contact, Address, Address
 from .section_forms import get_section_form
 
 
