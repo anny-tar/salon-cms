@@ -206,7 +206,7 @@ class Section(OrderedModel):
 
 
 class SectionStep(models.Model):
-    """Шаг в секции «Шаги». Редактируется через inline в admin."""
+    """Шаг в секции «Шаги». Новые шаги добавляются в конец по порядку создания."""
     section = models.ForeignKey(
         Section, on_delete=models.CASCADE,
         related_name='steps', verbose_name='Секция',
@@ -214,12 +214,11 @@ class SectionStep(models.Model):
     number  = models.CharField('Номер/символ', max_length=10,
                                help_text='Например: 01, 1, A, ★')
     text    = models.TextField('Текст шага')
-    order   = models.PositiveSmallIntegerField('Порядок', default=0)
 
     class Meta:
         verbose_name = 'Шаг'
         verbose_name_plural = 'Шаги'
-        ordering = ['order']
+        ordering = ['id']
 
     def __str__(self):
         return f'{self.number}. {self.text[:50]}'
@@ -266,6 +265,22 @@ class Address(models.Model):
 
     class Meta:
         verbose_name = 'Адрес'
+        verbose_name_plural = 'Адреса'
+
+    def __str__(self):
+        return self.name
+
+
+class Address(models.Model):
+    name    = models.CharField('Название', max_length=255,
+                               help_text='Например: «Главный офис», «Филиал на Ленина»')
+    address = models.TextField('Адрес', blank=True,
+                               help_text='Текстовый адрес для отображения')
+    map_url = models.TextField('Ссылка карты', blank=True,
+                               help_text='Значение атрибута src из iframe Яндекс Карт')
+
+    class Meta:
+        verbose_name        = 'Адрес'
         verbose_name_plural = 'Адреса'
 
     def __str__(self):
