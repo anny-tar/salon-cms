@@ -269,19 +269,3 @@ class Address(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Address(models.Model):
-    name    = models.CharField('Название', max_length=255,
-                               help_text='Например: «Главный офис», «Филиал на Ленина»')
-    address = models.TextField('Адрес', blank=True,
-                               help_text='Текстовый адрес для отображения')
-    map_url = models.TextField('Ссылка карты', blank=True,
-                               help_text='Значение атрибута src из iframe Яндекс Карт')
-
-    class Meta:
-        verbose_name        = 'Адрес'
-        verbose_name_plural = 'Адреса'
-
-    def __str__(self):
-        return self.name
